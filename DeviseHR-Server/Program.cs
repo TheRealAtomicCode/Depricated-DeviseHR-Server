@@ -32,7 +32,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("secre32dsaASD342IUIIYI&67iy&^YIU^*&Y7o8y689&*(^&&%&^$&^r467$^%TyTHJG<JgjgjkgKTYUIT*&^*O&6yi*&O&*yi*&(*YUIyT&^Y^tryu5rty54TR%^TYT^%*&u3DSdsft")),
+            IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("JhdjG78897&*hDWewfhjJHuii()()90*789^^&6%56rtRE#w3321@!#ER789*(UIJjhGHGFSXcVjkhaiuohRDIiu&(*iJJKUIO78(iu()*^&)))")),
             ValidateIssuer = false,
             ValidateAudience = false,
             ValidateLifetime = true, // Check if the token is expired
@@ -42,13 +42,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Admin", policy =>
-    policy.RequireClaim("UserTypeId", "1"));
+    policy.RequireClaim("userType", "1"));
 
     options.AddPolicy("Manager", policy =>
-    policy.RequireClaim("UserTypeId", "1", "2"));
+    policy.RequireClaim("userType", "1", "2"));
 
     options.AddPolicy("Employee", policy =>
-    policy.RequireClaim("UserTypeId", "1", "2", "3"));
+    policy.RequireClaim("userType", "1", "2", "3"));
+
+    options.AddPolicy("EnableAddEmployees", policy =>
+    policy.RequireClaim("enableAddEmployees", "true"));
+
+    options.AddPolicy("EnableTerminateEmployees", policy =>
+    policy.RequireClaim("enableTerminateEmployees", "true"));
 });
 
 // add the CORS middleware to allow any origin
