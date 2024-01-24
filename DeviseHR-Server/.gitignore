@@ -1,0 +1,26 @@
+# .NET Core and .NET 5+ projects
+bin/
+obj/
+*.swp
+*.suo
+*.user
+*.cache
+*.bak
+*.vs
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# NuGet
+*.nuget.props
+*.nuget.targets
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+build/
+[Bb]in/
+[Oo]bj/
