@@ -16,11 +16,13 @@ namespace DeviseHR_Server.Controllers.User_Controllers
         [HttpPost("profile")]
         [Authorize(Policy = "Manager")]
         [Authorize(Policy = "EnableAddEmployees")]
-        public ActionResult<ServiceResponse<string>> Profile()
+        public async Task<ActionResult<ServiceResponse<User>>> Profile([FromRoute] int userId)
         {
             try
             {
-                var serviceResponse = new ServiceResponse<string>("sadsda", true, null!, null!);
+                User myProfile = await ProfileService.GetMyProfile(userId);
+
+                var serviceResponse = new ServiceResponse<User>(myProfile, true, null!, null!);
 
                 return Ok(serviceResponse);
             }

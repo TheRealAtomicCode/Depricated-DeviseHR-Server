@@ -24,6 +24,26 @@ namespace DeviseHR_Server.Repositories
                 }
            
         }
-       
+
+
+        public static async Task<User> GetUserById(int userId)
+        {
+
+            using (var db = new DeviseHrContext())
+            {
+                var user = await db.Users.Where(u => u.Id == userId)
+                    .Include(u => u.Company)
+                    .Include(u => u.Role).FirstOrDefaultAsync();
+
+                if (user == null)
+                {
+                    throw new Exception("Invalid Email or Password");
+                }
+
+                return user;
+            }
+
+        }
+
     }
 }
