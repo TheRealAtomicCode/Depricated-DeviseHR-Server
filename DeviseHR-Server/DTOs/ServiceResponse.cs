@@ -2,14 +2,11 @@
 {
     public class ServiceResponse<T>
     {
-        private object value;
-        private bool v;
 
-
-        public ServiceResponse(object value, bool v, string message)
+        public ServiceResponse(T data, bool success, string message)
         {
-            this.value = value;
-            this.v = v;
+            Data = data;
+            Success = success;
             Message = message;
         }
 
@@ -20,9 +17,20 @@
             Message = message;
             Jwt = jwt;
         }
+
+        public ServiceResponse(T data, bool success, string message, string jwt, string refreshToken)
+        {
+            Data = data;
+            Success = success;
+            Message = message;
+            Jwt = jwt;
+            RefreshToken = refreshToken;
+        }
+
         public T? Data { get; set; }
         public bool Success { get; set; } = true;
         public string Message { get; set; } = string.Empty;
         public string? Jwt { get; set; }
+        public string? RefreshToken { get; set; }
     }
 }

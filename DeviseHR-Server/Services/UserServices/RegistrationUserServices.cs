@@ -7,25 +7,24 @@ namespace DeviseHR_Server.Services.UserServices
 {
     public class RegistrationUserServices
     {
-        public static async Task<ServiceResponse<User>> LoginUser(string email, string password)
+        public static async Task<ServiceResponse<User>> GetUserByCredencials(string email, string password)
         {
-            var user = await UserRepository.GetUserByCredencials(email.Trim(), password.Trim());
+            User user = await UserRepository.GetUserByEmail(email.Trim());
 
-            bool isMatch = BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
+            AccessMethods.VerifyPassword(user, password);
 
-            if (!isMatch)
-            {
-                throw new Exception("Invalid Email or Password");
-            }
+            AccessMethods.VerifyUserAccess(user);
 
-           
-            if (user.Company!.ExpirationDate < DateTime.Now) throw new Exception("Your DeviseHR Subscription has ended");
+            string token = await Tokens.GenerateUserAuthJWT(user);
 
-            AccessMethods.VerifyAccess(user.IsVerified, user.IsTerminated, (int)user.LoginAttempt!);
+            string refreshToken = await Tokens.GenerateUserRefreshToken(user);
 
-            string token = Tokens.GenerateUserAuthJWT(user);
+            User loggedInUser = await RefreshTokenRepository.UpdateRefreshTokensByUserId(user, refreshToken);
 
-            var serviceResponse = new ServiceResponse<User>(user, true, "", token!);
+            loggedInUser.PasswordHash = string.Empty;
+            loggedInUser.RefreshTokens.Clear();
+
+            var serviceResponse = new ServiceResponse<User>(loggedInUser, true, "", token, refreshToken);
     
             return serviceResponse;
         }

@@ -22,8 +22,6 @@ namespace DeviseHR_Server.Controllers.User_Controllers
             {
                 var serviceResponse = new ServiceResponse<string>("sadsda", true, null!, null!);
 
-             
-
                 return Ok(serviceResponse);
             }
             catch (Exception ex)

@@ -6,7 +6,7 @@ namespace DeviseHR_Server.Repositories
 {
     public class UserRepository
     {
-        public static async Task<User> GetUserByCredencials(string email, string password)
+        public static async Task<User> GetUserByEmail(string email)
         {
           
                 using (var db = new DeviseHrContext())
@@ -20,7 +20,7 @@ namespace DeviseHR_Server.Repositories
                         throw new Exception("Invalid Email or Password");
                     }
 
-                    return user!;
+                    return user;
                 }
            
         }

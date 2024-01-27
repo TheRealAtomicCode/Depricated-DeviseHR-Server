@@ -7,12 +7,35 @@ namespace DeviseHR_Server.Common
 {
     public static class Tokens
     {
-        public static string GenerateUserAuthJWT(User user)
+        public static async Task<string> GenerateUserAuthJWT(User user)
         {
-            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("JhdjG78897&*hDWewfhjJHuii()()90*789^^&6%56rtRE#w3321@!#ER789*(UIJjhGHGFSXcVjkhaiuohRDIiu&(*iJJKUIO78(iu()*^&)))"));
+            string? jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET");
+
+            if (string.IsNullOrWhiteSpace(jwtSecret)) throw new Exception("Environment Error");
+
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(jwtSecret));
 
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
+            var claims = GenerateUserJwtClaims(user);
+
+            string? jwtExpTime = Environment.GetEnvironmentVariable("EXPTIME");
+
+            if (string.IsNullOrWhiteSpace(jwtExpTime)) throw new Exception("Environment Error");
+
+            var token = new JwtSecurityToken(
+                expires: DateTime.UtcNow.AddMinutes(int.Parse(jwtExpTime)), 
+                signingCredentials: credentials,
+                claims: claims // Add the claims to the token
+            );
+
+            var jwt = await Task.Run(() => new JwtSecurityTokenHandler().WriteToken(token));
+
+            return jwt;
+        }
+
+        public static List<Claim> GenerateUserJwtClaims(User user)
+        {
             var claims = new List<Claim>();
 
             if (user.UserType == 1)
@@ -33,7 +56,8 @@ namespace DeviseHR_Server.Common
                     new Claim("enableViewEmployeePayroll", "true"),
                     new Claim("enableViewEmployeeSensitiveInformation", "true")
                 };
-            }else if(user.UserType == 2)
+            }
+            else if (user.UserType == 2)
             {
                 claims = new List<Claim>
                 {
@@ -61,15 +85,52 @@ namespace DeviseHR_Server.Common
                 };
             }
 
+            return claims;
+        }
+
+
+        // refresh tokens
+
+        public static async Task<string> GenerateUserRefreshToken(User user)
+        {
+            string? refreshJwtSecret = Environment.GetEnvironmentVariable("JWT_REFRESH_SECRET");
+
+            if (string.IsNullOrWhiteSpace(refreshJwtSecret)) throw new Exception("Environment Error");
+
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(refreshJwtSecret));
+
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+            
+            var claims = GenerateUserRefreshJwtClaims(user);
+
+            string? jwtExpTime = Environment.GetEnvironmentVariable("EXPTIME");
+
+            if (string.IsNullOrWhiteSpace(jwtExpTime)) throw new Exception("Environment Error");
+
             var token = new JwtSecurityToken(
-                expires: DateTime.UtcNow.AddMinutes(15), 
+                expires: DateTime.UtcNow.AddMinutes(int.Parse(jwtExpTime)),
                 signingCredentials: credentials,
                 claims: claims // Add the claims to the token
             );
 
-            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+            var refreshJwt = await Task.Run(() => new JwtSecurityTokenHandler().WriteToken(token));
 
-            return jwt;
+            return refreshJwt;
         }
+
+        public static List<Claim> GenerateUserRefreshJwtClaims(User user)
+        {
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim("id", user.Id.ToString()),
+                new Claim("userType", user.UserType.ToString()),
+            };
+
+            return claims;
+        }
+
+        // delete all refresh tokens
+
+
     }
 }

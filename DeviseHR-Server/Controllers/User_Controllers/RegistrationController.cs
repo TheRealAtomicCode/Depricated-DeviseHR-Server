@@ -17,7 +17,7 @@ namespace DeviseHR_Server.Controllers.User_Controllers
         {
             try
             {
-                var serviceResponceUser = await RegistrationUserServices.LoginUser(loginUserRequest.Email, loginUserRequest.Password);
+                var serviceResponceUser = await RegistrationUserServices.GetUserByCredencials(loginUserRequest.Email, loginUserRequest.Password);
 
                 return Ok(serviceResponceUser);
             }

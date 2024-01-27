@@ -8,8 +8,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "http://localhost:5115",
-      "sqlDebugging": true
+      "applicationUrl": "http://localhost:5289"
     },
     "https": {
       "commandName": "Project",
@@ -17,20 +16,20 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
+        "AllowedHosts": "*",
+        "HR_SERVER_PORT": "5000",
         "HR_PORT": "5010",
         "OP_CLIENT_PORT": "5005",
         "HR_CLIENT_PORT": "5015",
         "DATABASE_URL": "postgresql://postgres:890899000@localhost:5432/DeviseHR?schema=public",
         "JWT_REFRESH_SECRET": "HVgcxFE#%22#%#%$^*youIYyp897p98IOUPuLKjGtvnBCNhcglK:L'iopI}0-jlkHKLHKJLJKFUY563#WYRE$#@r6765^&567tYFfCBNcbncvGCJ",
         "JWT_SECRET": "JhdjG78897&*hDWewfhjJHuii()()90*789^^&6%56rtRE#w3321@!#ER789*(UIJjhGHGFSXcVjkhaiuohRDIiu&(*iJJKUIO78(iu()*^&)))",
-        "EXPTIME": "15m",
-        "REG_EXPTIME": "15m",
+        "EXPTIME": "15",
+        "REG_EXPTIME": "15",
         "LOGIN_ATTEPTS_ALLOWED": "10"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "https://localhost:7045;http://localhost:5115",
-      "sqlDebugging": true,
-      "nativeDebugging": true
+      "applicationUrl": "https://localhost:7207;http://localhost:5289"
     },
     "IIS Express": {
       "commandName": "IISExpress",
@@ -40,15 +39,15 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "WSL": {
-      "commandName": "WSL2",
+    "Profile 1": {
+      "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "https://localhost:7045/swagger",
+      "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_URLS": "https://localhost:7045;http://localhost:5115"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "distributionName": ""
+      "dotnetRunMessages": true,
+      "applicationUrl": "http://localhost:5289"
     }
   },
   "$schema": "http://json.schemastore.org/launchsettings.json",
@@ -56,8 +55,8 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:37229",
-      "sslPort": 44398
+      "applicationUrl": "http://localhost:54834",
+      "sslPort": 44314
     }
   }
 }

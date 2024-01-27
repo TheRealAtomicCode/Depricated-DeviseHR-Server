@@ -31,7 +31,7 @@ public partial class User
 
     public DateTime UpdatedAt { get; set; }
 
-    public List<string>? RefreshTokens { get; set; }
+    public List<string> RefreshTokens { get; set; } = null!;
 
     public string? NiNo { get; set; }
 
