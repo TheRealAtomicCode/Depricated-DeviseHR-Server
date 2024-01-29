@@ -1,6 +1,7 @@
 ﻿using DeviseHR_Server.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.Eventing.Reader;
+using System.Linq;
 
 namespace DeviseHR_Server.Repositories
 {
@@ -43,6 +44,25 @@ namespace DeviseHR_Server.Repositories
                 return user;
             }
 
+        }
+
+
+        public static async Task<User> GetUserByIdAndRefreshToken(int userId, string refreshToken)
+        {
+            using (var db = new DeviseHrContext())
+            {
+                var user = await db.Users.Where(u => u.Id == userId && u.RefreshTokens.Any(rt => rt == refreshToken))
+                    .Include(u => u.Company)
+                    .Include(u => u.Role)
+                    .FirstOrDefaultAsync();
+
+                if (user == null)
+                {
+                    throw new Exception("Please Authenticate");
+                }
+
+                return user;
+            }
         }
 
     }
