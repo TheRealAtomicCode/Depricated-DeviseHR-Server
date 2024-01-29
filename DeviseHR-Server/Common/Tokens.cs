@@ -90,7 +90,6 @@ namespace DeviseHR_Server.Common
 
 
         // refresh tokens
-
         public static async Task<string> GenerateUserRefreshToken(User user)
         {
             string? refreshJwtSecret = Environment.GetEnvironmentVariable("JWT_REFRESH_SECRET");
@@ -129,7 +128,48 @@ namespace DeviseHR_Server.Common
             return claims;
         }
 
-        // delete all refresh tokens
+
+        // Extract claims 
+        public static void ExtractClaimsFromToken(string clientJwt, bool isRefreshToken, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtSecurityToken)
+        {
+            string envName;
+            if (isRefreshToken) {
+                envName = "JWT_REFRESH_SECRET";
+            }
+            else
+            {
+                envName = "JWT_SECRET";
+            }
+
+            string? secret = Environment.GetEnvironmentVariable(envName);
+            if (secret == null) throw new Exception("Environment Error");
+
+            // Validate Token
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secret))
+            };
+
+            SecurityToken validateToken;
+            claimsPrincipal = tokenHandler.ValidateToken(clientJwt, tokenValidationParameters, out validateToken);
+
+            jwtSecurityToken = (JwtSecurityToken)validateToken;
+        }
+
+        public static string ExtractTokenFromRequestHeaders(HttpContext httpContext)
+        {
+            string? token = httpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+            if (token == null) throw new Exception("Failed to Authenticate Request headers");
+
+            return token;
+        }
+
 
 
     }

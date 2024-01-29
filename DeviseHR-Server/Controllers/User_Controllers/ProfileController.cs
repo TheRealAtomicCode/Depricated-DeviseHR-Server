@@ -1,11 +1,11 @@
-﻿using DeviseHR_Server.DTOs.RequestDTOs;
-using DeviseHR_Server.DTOs;
+﻿using DeviseHR_Server.DTOs;
 using DeviseHR_Server.Models;
 using DeviseHR_Server.Services.UserServices;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using DeviseHR_Server.Middleware;
 using Microsoft.AspNetCore.Authorization;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using DeviseHR_Server.Common;
 
 namespace DeviseHR_Server.Controllers.User_Controllers
 {
@@ -14,12 +14,17 @@ namespace DeviseHR_Server.Controllers.User_Controllers
     public class ProfileController : ControllerBase
     {
         [HttpPost("profile")]
-        [Authorize(Policy = "Manager")]
-        [Authorize(Policy = "EnableAddEmployees")]
-        public async Task<ActionResult<ServiceResponse<User>>> Profile([FromRoute] int userId)
+        [Authorize(Policy = "Employee")]
+        public async Task<ActionResult<ServiceResponse<User>>> Profile()
         {
             try
             {
+                string clientJWT = Tokens.ExtractTokenFromRequestHeaders(HttpContext);
+                Tokens.ExtractClaimsFromToken(clientJWT, false, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
+
+                string myIdStr = claimsPrincipal.FindFirst("id")!.Value;
+                int userId = int.Parse(myIdStr);
+
                 User myProfile = await ProfileService.GetMyProfile(userId);
 
                 var serviceResponse = new ServiceResponse<User>(myProfile, true, null!, null!);
