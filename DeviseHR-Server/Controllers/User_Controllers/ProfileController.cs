@@ -13,7 +13,7 @@ namespace DeviseHR_Server.Controllers.User_Controllers
     [ApiController]
     public class ProfileController : ControllerBase
     {
-        [HttpPost("profile")]
+        [HttpGet("me")]
         [Authorize(Policy = "Employee")]
         public async Task<ActionResult<ServiceResponse<User>>> Profile()
         {

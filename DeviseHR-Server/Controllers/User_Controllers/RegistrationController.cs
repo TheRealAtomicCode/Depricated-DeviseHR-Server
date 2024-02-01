@@ -32,6 +32,7 @@ namespace DeviseHR_Server.Controllers.User_Controllers
         }
 
         [HttpPost("refresh")]
+        [Authorize(Policy = "Employee")]
         public async Task<ActionResult<ServiceResponse<User>>> Refresh([FromBody] string refreshToken)
         {
             try
@@ -44,7 +45,7 @@ namespace DeviseHR_Server.Controllers.User_Controllers
                 string myUserTypeStr = claimsPrincipal.FindFirst("userType")!.Value;
                 int userType = int.Parse(myUserTypeStr);
 
-                var serviceResponceUser = await RegistrationUserServices.GetAndRefreshUserById(userId, userType, refreshToken);
+                var serviceResponceUser = await RegistrationUserServices.GetAndRefreshUserById(userId, refreshToken);
 
                 return Ok(serviceResponceUser);
             }

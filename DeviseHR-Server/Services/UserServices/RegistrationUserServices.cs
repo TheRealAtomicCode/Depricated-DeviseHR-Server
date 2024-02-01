@@ -19,17 +19,17 @@ namespace DeviseHR_Server.Services.UserServices
 
             string refreshToken = await Tokens.GenerateUserRefreshToken(user);
 
-            User loggedInUser = await RefreshTokenRepository.UpdateRefreshTokensByUserId(user, refreshToken, "");
+            await RefreshTokenRepository.UpdateRefreshTokensByUserId(user.Id, refreshToken, "");
 
-            loggedInUser.PasswordHash = string.Empty;
-            loggedInUser.RefreshTokens.Clear();
+            user.PasswordHash = string.Empty;
+            user.RefreshTokens.Clear();
 
-            var serviceResponse = new ServiceResponse<User>(loggedInUser, true, "", token, refreshToken);
+            var serviceResponse = new ServiceResponse<User>(user, true, "", token, refreshToken);
     
             return serviceResponse;
         }
 
-        public static async Task<ServiceResponse<User>> GetAndRefreshUserById(int userId, int myUserType, string refreshToken)
+        public static async Task<ServiceResponse<User>> GetAndRefreshUserById(int userId, string refreshToken)
         {
             User user = await UserRepository.GetUserByIdAndRefreshToken(userId, refreshToken);
 
@@ -39,12 +39,12 @@ namespace DeviseHR_Server.Services.UserServices
 
             string newRefreshToken = await Tokens.GenerateUserRefreshToken(user);
 
-            User loggedInUser = await RefreshTokenRepository.UpdateRefreshTokensByUserId(user, newRefreshToken, refreshToken);
+            await RefreshTokenRepository.UpdateRefreshTokensByUserId(user.Id, newRefreshToken, refreshToken);
 
-            loggedInUser.PasswordHash = string.Empty;
-            loggedInUser.RefreshTokens.Clear();
+            user.PasswordHash = string.Empty;
+            user.RefreshTokens.Clear();
 
-            var serviceResponse = new ServiceResponse<User>(loggedInUser, true, "", token, refreshToken);
+            var serviceResponse = new ServiceResponse<User>(user, true, "", token, newRefreshToken);
 
             return serviceResponse;
         }
