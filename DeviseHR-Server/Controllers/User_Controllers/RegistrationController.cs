@@ -107,5 +107,23 @@ namespace DeviseHR_Server.Controllers.User_Controllers
                 return BadRequest(serviceResponse);
             }
         }
+
+        [HttpPatch("resetPassword")]
+        public async Task<ActionResult<ServiceResponse<bool>>> ResetPassword([FromBody] string email)
+        {
+            try
+            {
+                await RegistrationUserServices.resetPasswordByEmail(email);
+
+                var serviceResponse = new ServiceResponse<bool>(true, true, "");
+
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                var serviceResponse = new ServiceResponse<bool>(false, false, ex.Message);
+                return BadRequest(serviceResponse);
+            }
+        }
     }
 }

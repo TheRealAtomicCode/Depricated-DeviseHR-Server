@@ -76,5 +76,7 @@ namespace DeviseHR_Server.Repositories
                 await db.SaveChangesAsync();
             }
         }
+
+
     }
 }

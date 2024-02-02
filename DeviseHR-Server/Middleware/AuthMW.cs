@@ -24,7 +24,7 @@ namespace DeviseHR_Server.Middleware
             {
                 context.Response.StatusCode = 400;
                 context.Response.ContentType = "application/json";
-                await context.Response.WriteAsync("Error");
+                await context.Response.WriteAsync(ex.Message);
             }
         }
 

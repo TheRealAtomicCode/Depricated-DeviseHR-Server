@@ -65,5 +65,22 @@ namespace DeviseHR_Server.Repositories
             }
         }
 
+
+        public static async Task UpdateUserVerificationCodeById(int userId, string verificationCode)
+        {
+            using (var db = new DeviseHrContext())
+            {
+                User? user = await db.Users.Where(u => u.Id == userId).FirstOrDefaultAsync();
+
+                if (user == null) throw new Exception("Invalid user credencials");
+
+                user.VerificationCode = verificationCode;
+                user.LastActiveTime = DateTime.Now;
+                user.LastLoginTime = DateTime.Now;
+
+                await db.SaveChangesAsync();
+            }
+        }
+
     }
 }

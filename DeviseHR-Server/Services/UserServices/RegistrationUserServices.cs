@@ -1,5 +1,6 @@
 ﻿using DeviseHR_Server.Common;
 using DeviseHR_Server.DTOs;
+using DeviseHR_Server.Helpers;
 using DeviseHR_Server.Models;
 using DeviseHR_Server.Repositories;
 
@@ -57,6 +58,17 @@ namespace DeviseHR_Server.Services.UserServices
         public static async Task LogoutAllDevicesByUserId(int userId)
         {
             await RefreshTokenRepository.ClearRefreshTokensListByUserId(userId);
+        }
+
+        public static async Task resetPasswordByEmail(string email)
+        {
+            string verificationCode = StringGeneration.GenerateSixDigitString();
+
+            User user = await UserRepository.GetUserByEmail(email.Trim());
+
+            AccessMethods.VerifyUserAccess(user);
+
+            await UserRepository.UpdateUserVerificationCodeById(user.Id, verificationCode);
         }
     }
 }
