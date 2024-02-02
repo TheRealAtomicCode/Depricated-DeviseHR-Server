@@ -7,7 +7,7 @@ namespace DeviseHR_Server.Services.UserServices
 {
     public class RegistrationUserServices
     {
-        public static async Task<ServiceResponse<User>> GetUserByCredencials(string email, string password)
+        public static async Task<ServiceResponse<User>> LoginUserByCredencials(string email, string password)
         {
             User user = await UserRepository.GetUserByEmail(email.Trim());
 
@@ -29,7 +29,7 @@ namespace DeviseHR_Server.Services.UserServices
             return serviceResponse;
         }
 
-        public static async Task<ServiceResponse<User>> GetAndRefreshUserById(int userId, string refreshToken)
+        public static async Task<ServiceResponse<User>> RefreshUserToken(int userId, string refreshToken)
         {
             User user = await UserRepository.GetUserByIdAndRefreshToken(userId, refreshToken);
 
@@ -47,6 +47,16 @@ namespace DeviseHR_Server.Services.UserServices
             var serviceResponse = new ServiceResponse<User>(user, true, "", token, newRefreshToken);
 
             return serviceResponse;
+        }
+
+        public static async Task LogoutUserByRefreshToken(int userId, string refreshToken)
+        {
+            await RefreshTokenRepository.RemoveRefreshTokenByUserId(userId, refreshToken);
+        }
+
+        public static async Task LogoutAllDevicesByUserId(int userId)
+        {
+            await RefreshTokenRepository.ClearRefreshTokensListByUserId(userId);
         }
     }
 }

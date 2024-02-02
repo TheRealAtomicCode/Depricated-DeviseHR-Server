@@ -37,5 +37,44 @@ namespace DeviseHR_Server.Repositories
                 return user;
             }
         }
+
+
+        public static async Task RemoveRefreshTokenByUserId(int userId, string refreshToken)
+        {
+            using (var db = new DeviseHrContext())
+            {
+                User? user = await db.Users.Where(u => u.Id == userId).FirstOrDefaultAsync();
+
+                if (user == null) throw new Exception("Invalid user credencials");
+
+                string? tokenToRemove = user.RefreshTokens.FirstOrDefault(rt => rt == refreshToken);
+
+                if (tokenToRemove == null) throw new Exception("Please Authenticate");
+
+                user.RefreshTokens.Remove(tokenToRemove);
+                user.LastActiveTime = DateTime.Now;
+                user.LastLoginTime = DateTime.Now;
+
+                await db.SaveChangesAsync();
+            }
+        }
+
+        public static async Task ClearRefreshTokensListByUserId(int userId)
+        {
+            using (var db = new DeviseHrContext())
+            {
+                User? user = await db.Users.Where(u => u.Id == userId).FirstOrDefaultAsync();
+
+                if (user == null) throw new Exception("Invalid user credencials");
+
+                if (user.RefreshTokens.Count <= 0) throw new Exception("Please Authenticate");
+
+                user.RefreshTokens.Clear();
+                user.LastActiveTime = DateTime.Now;
+                user.LastLoginTime = DateTime.Now;
+
+                await db.SaveChangesAsync();
+            }
+        }
     }
 }

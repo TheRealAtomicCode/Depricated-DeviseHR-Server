@@ -20,7 +20,7 @@ namespace DeviseHR_Server.Controllers.User_Controllers
         {
             try
             {
-                var serviceResponceUser = await RegistrationUserServices.GetUserByCredencials(loginUserRequest.Email, loginUserRequest.Password);
+                var serviceResponceUser = await RegistrationUserServices.LoginUserByCredencials(loginUserRequest.Email, loginUserRequest.Password);
 
                 return Ok(serviceResponceUser);
             }
@@ -45,13 +45,65 @@ namespace DeviseHR_Server.Controllers.User_Controllers
                 string myUserTypeStr = claimsPrincipal.FindFirst("userType")!.Value;
                 int userType = int.Parse(myUserTypeStr);
 
-                var serviceResponceUser = await RegistrationUserServices.GetAndRefreshUserById(userId, refreshToken);
+                var serviceResponceUser = await RegistrationUserServices.RefreshUserToken(userId, refreshToken);
 
                 return Ok(serviceResponceUser);
             }
             catch (Exception ex)
             {
                 var serviceResponse = new ServiceResponse<User>(null!, false, ex.Message, null!);
+                return BadRequest(serviceResponse);
+            }
+        }
+
+
+        [HttpDelete("logout")]
+        [Authorize(Policy = "Employee")]
+        public async Task<ActionResult<ServiceResponse<bool>>> Logout([FromBody] string refreshToken)
+        {
+            try
+            {
+                string clientJWT = Tokens.ExtractTokenFromRequestHeaders(HttpContext);
+                Tokens.ExtractClaimsFromToken(clientJWT, false, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
+
+                string myIdStr = claimsPrincipal.FindFirst("id")!.Value;
+                int userId = int.Parse(myIdStr);
+
+                await RegistrationUserServices.LogoutUserByRefreshToken(userId, refreshToken);
+
+                var serviceResponse = new ServiceResponse<bool>(true, true, "");
+
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                var serviceResponse = new ServiceResponse<bool>(false, false, ex.Message);
+                return BadRequest(serviceResponse);
+            }
+        }
+
+
+        [HttpGet("logoutAllDevices")]
+        [Authorize(Policy = "Employee")]
+        public async Task<ActionResult<ServiceResponse<bool>>> LogoutAllDevices()
+        {
+            try
+            {
+                string clientJWT = Tokens.ExtractTokenFromRequestHeaders(HttpContext);
+                Tokens.ExtractClaimsFromToken(clientJWT, false, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
+
+                string myIdStr = claimsPrincipal.FindFirst("id")!.Value;
+                int userId = int.Parse(myIdStr);
+
+                await RegistrationUserServices.LogoutAllDevicesByUserId(userId);
+
+                var serviceResponse = new ServiceResponse<bool>(true, true, "");
+
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                var serviceResponse = new ServiceResponse<bool>(false, false, ex.Message);
                 return BadRequest(serviceResponse);
             }
         }
