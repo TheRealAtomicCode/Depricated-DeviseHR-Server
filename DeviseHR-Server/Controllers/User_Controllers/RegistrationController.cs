@@ -2,6 +2,7 @@
 using DeviseHR_Server.DTOs;
 using DeviseHR_Server.DTOs.RequestDTOs;
 using DeviseHR_Server.Models;
+using DeviseHR_Server.Services.EmailServices;
 using DeviseHR_Server.Services.UserServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -109,21 +110,41 @@ namespace DeviseHR_Server.Controllers.User_Controllers
         }
 
         [HttpPatch("resetPassword")]
-        public async Task<ActionResult<ServiceResponse<bool>>> ResetPassword([FromBody] string email)
+        public async Task<ActionResult<ServiceResponse<string>>> ResetPassword([FromBody] string email)
         {
             try
             {
                 await RegistrationUserServices.resetPasswordByEmail(email);
 
-                var serviceResponse = new ServiceResponse<bool>(true, true, "");
+                var serviceResponse = new ServiceResponse<string>(email, true, "");
 
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                var serviceResponse = new ServiceResponse<bool>(false, false, ex.Message);
+                var serviceResponse = new ServiceResponse<string>("", false, ex.Message);
                 return BadRequest(serviceResponse);
             }
         }
+
+        [HttpPatch("confermResetPassword")]
+        public async Task<ActionResult<ServiceResponse<User>>> ConfermResetPassword([FromBody] ResetUserPasswordRequest requestBody)
+        {
+            try
+            {
+                var serviceResponse = await RegistrationUserServices.confirmVerificationCodeByEmail(requestBody.Email, requestBody.VerificationCode, requestBody.Password);
+
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                var serviceResponse = new ServiceResponse<User>(null!, false, ex.Message, null!);
+                return BadRequest(serviceResponse);
+            }
+        }
+
+
+
+
     }
 }

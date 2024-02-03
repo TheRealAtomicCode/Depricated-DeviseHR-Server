@@ -5,7 +5,7 @@
         public static string GenerateSixDigitString()
         {
             Random random = new Random();
-            int code = random.Next(100000000, 1000000000);
+            int code = random.Next(1000000, 10000000);
             return code.ToString();
         }
     }

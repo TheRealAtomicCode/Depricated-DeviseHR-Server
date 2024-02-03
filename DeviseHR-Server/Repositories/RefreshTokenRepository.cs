@@ -6,13 +6,11 @@ namespace DeviseHR_Server.Repositories
 {
     public class RefreshTokenRepository
     {
-        public static async Task<User> UpdateRefreshTokensByUserId(int userId, string newRefreshToken, string oldRefreshToken)
+        public static async Task<User> UpdateRefreshTokensByUserId(User user, string newRefreshToken, string oldRefreshToken)
         {
             using (var db = new DeviseHrContext())
             {
-                User? user = await db.Users.Where(u => u.Id == userId).FirstOrDefaultAsync();
-
-                if (user == null) throw new Exception("Critical user Error");
+                db.Update(user);
 
                 if (!string.IsNullOrEmpty(oldRefreshToken))
                 {
@@ -29,6 +27,7 @@ namespace DeviseHR_Server.Repositories
                 }
 
                 user.RefreshTokens.Add(newRefreshToken);
+                user.LoginAttempt = 0;
                 user.LastActiveTime = DateTime.Now;
                 user.LastLoginTime = DateTime.Now;
 

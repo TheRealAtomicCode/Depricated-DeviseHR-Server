@@ -1,5 +1,7 @@
-﻿using DeviseHR_Server.Models;
+﻿using DeviseHR_Server.Common;
+using DeviseHR_Server.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 
@@ -76,10 +78,49 @@ namespace DeviseHR_Server.Repositories
 
                 user.VerificationCode = verificationCode;
                 user.LastActiveTime = DateTime.Now;
-                user.LastLoginTime = DateTime.Now;
 
                 await db.SaveChangesAsync();
             }
+        }
+
+        public static async Task IncrementLoginAttepts(User user)
+        {
+            using (var db = new DeviseHrContext())
+            {
+                db.Users.Update(user);
+
+                user.LoginAttempt++;
+
+                await db.SaveChangesAsync();
+            }
+        }
+
+
+        public static async Task ConfermVerificationCodeUpdatePasswordAndLoginUser(User user, string verificationCode, string newPassword, string refreshToken)
+        {
+            using (var db = new DeviseHrContext())
+            {
+                db.Users.Update(user);
+
+                if (user.VerificationCode != verificationCode)
+                {
+                    await IncrementLoginAttepts(user);
+                    throw new Exception("Invalid verification code");
+                }
+
+                user.VerificationCode = null;
+                user.LastActiveTime = DateTime.Now;
+                user.LastLoginTime = DateTime.Now;
+                user.PasswordHash = AccessMethods.GenerateHash(newPassword);
+                user.RefreshTokens.Add(refreshToken);
+                user.LoginAttempt = 0;
+
+                await db.SaveChangesAsync();
+            }
+
+
+
+          
         }
 
     }

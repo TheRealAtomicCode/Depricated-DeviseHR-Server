@@ -1,6 +1,7 @@
 ﻿
 
 using DeviseHR_Server.Models;
+using DeviseHR_Server.Repositories;
 
 namespace DeviseHR_Server.Common
 {
@@ -23,14 +24,23 @@ namespace DeviseHR_Server.Common
             if (user.LoginAttempt > loginAttemptsAllowed) throw new Exception("You have attempted to login multiple times unsuccessfully. Please contact your manager to regain access to your account.");
         }
 
-        public static void VerifyPassword(User user, string clientPassword)
+        public static async Task VerifyPassword(User user, string clientPassword)
         {
             bool isMatch = BCrypt.Net.BCrypt.Verify(clientPassword, user.PasswordHash);
 
             if (!isMatch)
             {
+                await UserRepository.IncrementLoginAttepts(user);
                 throw new Exception("Invalid Email or Password");
             }
+        }
+
+        public static string GenerateHash(string password)
+        {
+            string salt = BCrypt.Net.BCrypt.GenerateSalt(); // Generate a random salt
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(password, salt); // Generate the hash
+
+            return hashedPassword;
         }
     }
 }

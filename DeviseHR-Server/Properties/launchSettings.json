@@ -26,7 +26,8 @@
         "JWT_SECRET": "JhdjG78897&*hDWewfhjJHuii()()90*789^^&6%56rtRE#w3321@!#ER789*(UIJjhGHGFSXcVjkhaiuohRDIiu&(*iJJKUIO78(iu()*^&)))",
         "EXPTIME": "15",
         "REG_EXPTIME": "15",
-        "LOGIN_ATTEPTS_ALLOWED": "10"
+        "LOGIN_ATTEPTS_ALLOWED": "10",
+        "LOGIN_TIME_EXPIRATION": "5"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7207;http://localhost:5289"
