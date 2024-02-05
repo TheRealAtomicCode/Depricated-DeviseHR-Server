@@ -1,4 +1,5 @@
 ﻿using DeviseHR_Server.Common;
+using DeviseHR_Server.DTOs.ResponseDTOs;
 using DeviseHR_Server.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -48,6 +49,66 @@ namespace DeviseHR_Server.Repositories
 
         }
 
+
+        public static async Task<List<FoundUser>> GetCompanyUsersById(int myId, int companyId, int pageNo, int userType, bool enableShowEmployees)
+        {
+
+            if (enableShowEmployees)
+            {
+                if (userType == 3)
+                {
+                    throw new Exception("Not allowed to view users");
+                }
+                else if (userType == 2)
+                {
+                    using (var db = new DeviseHrContext())
+                    {
+
+                        var users = await (
+                            from u in db.Users
+                            join h in db.Hierarchies on u.Id equals h.ManagerId
+                            where h.ManagerId == myId && u.CompanyId == companyId
+                            select new FoundUser
+                            {
+                                Id = u.Id,
+                                CompanyId = u.CompanyId,
+                                FirstName = u.FirstName,
+                                LastName = u.LastName,
+                                Email = u.Email,
+                                UserType = u.UserType,
+                            })
+                            .ToListAsync();
+
+                        return users;
+                    }
+                }
+                else
+                {
+                    using (var db = new DeviseHrContext())
+                    {
+                            var users = await (
+                                from u in db.Users
+                                where u.CompanyId == companyId
+                                select new FoundUser
+                                {
+                                    Id = u.Id,
+                                    CompanyId = u.CompanyId,
+                                    FirstName = u.FirstName,
+                                    LastName = u.LastName,
+                                    Email = u.Email,
+                                    UserType = u.UserType,
+                                })
+                                .ToListAsync();
+
+                            return users;
+                    }
+                }
+                
+
+
+
+            }
+        }
 
         public static async Task<User> GetUserByIdAndRefreshToken(int userId, string refreshToken)
         {

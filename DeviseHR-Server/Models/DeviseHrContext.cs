@@ -25,6 +25,8 @@ public partial class DeviseHrContext : DbContext
 
     public virtual DbSet<DiscardedContract> DiscardedContracts { get; set; }
 
+    public virtual DbSet<Hierarchy> Hierarchies { get; set; }
+
     public virtual DbSet<Note> Notes { get; set; }
 
     public virtual DbSet<Operator> Operators { get; set; }
@@ -292,6 +294,27 @@ public partial class DeviseHrContext : DbContext
             entity.Property(e => e.UserId).HasColumnName("user_id");
         });
 
+        modelBuilder.Entity<Hierarchy>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("hierarchies_pkey");
+
+            entity.ToTable("hierarchies");
+
+            entity.HasIndex(e => new { e.ManagerId, e.SubordinateId }, "uq_hierarchies").IsUnique();
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ManagerId).HasColumnName("manager_id");
+            entity.Property(e => e.SubordinateId).HasColumnName("subordinate_id");
+
+            entity.HasOne(d => d.Manager).WithMany(p => p.HierarchyManagers)
+                .HasForeignKey(d => d.ManagerId)
+                .HasConstraintName("fk_manager");
+
+            entity.HasOne(d => d.Subordinate).WithMany(p => p.HierarchySubordinates)
+                .HasForeignKey(d => d.SubordinateId)
+                .HasConstraintName("fk_subordinate");
+        });
+
         modelBuilder.Entity<Note>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("notes_pkey");
@@ -549,49 +572,12 @@ public partial class DeviseHrContext : DbContext
 
             entity.HasOne(d => d.Company).WithMany(p => p.Users)
                 .HasForeignKey(d => d.CompanyId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("users_company_id_fkey");
 
             entity.HasOne(d => d.Role).WithMany(p => p.Users)
                 .HasForeignKey(d => d.RoleId)
                 .HasConstraintName("users_role_id_fkey");
-
-            entity.HasMany(d => d.Managers).WithMany(p => p.Subordinates)
-                .UsingEntity<Dictionary<string, object>>(
-                    "Hierarchy",
-                    r => r.HasOne<User>().WithMany()
-                        .HasForeignKey("ManagerId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("fk_manager"),
-                    l => l.HasOne<User>().WithMany()
-                        .HasForeignKey("SubordinateId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("fk_subordinate"),
-                    j =>
-                    {
-                        j.HasKey("ManagerId", "SubordinateId").HasName("pk_hierarchies");
-                        j.ToTable("hierarchies");
-                        j.IndexerProperty<int>("ManagerId").HasColumnName("manager_id");
-                        j.IndexerProperty<int>("SubordinateId").HasColumnName("subordinate_id");
-                    });
-
-            entity.HasMany(d => d.Subordinates).WithMany(p => p.Managers)
-                .UsingEntity<Dictionary<string, object>>(
-                    "Hierarchy",
-                    r => r.HasOne<User>().WithMany()
-                        .HasForeignKey("SubordinateId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("fk_subordinate"),
-                    l => l.HasOne<User>().WithMany()
-                        .HasForeignKey("ManagerId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("fk_manager"),
-                    j =>
-                    {
-                        j.HasKey("ManagerId", "SubordinateId").HasName("pk_hierarchies");
-                        j.ToTable("hierarchies");
-                        j.IndexerProperty<int>("ManagerId").HasColumnName("manager_id");
-                        j.IndexerProperty<int>("SubordinateId").HasColumnName("subordinate_id");
-                    });
         });
 
         modelBuilder.Entity<WorkingPattern>(entity =>

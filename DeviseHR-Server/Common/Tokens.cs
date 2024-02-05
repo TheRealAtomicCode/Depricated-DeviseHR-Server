@@ -38,11 +38,26 @@ namespace DeviseHR_Server.Common
         {
             var claims = new List<Claim>();
 
-            if (user.UserType == 1)
+            if (user.UserType == 1 && (user.Company != null && user.Role != null))
             {
                 claims = new List<Claim>
                 {
                     new Claim("id", user.Id.ToString()),
+                    // companyId and companySettings
+                    new Claim("companyId", user.Company.Id.ToString()),
+                    new Claim("enableSemiPersonalInformation", "true"),
+                    new Claim("enableShowEmployees", "true"),
+                    new Claim("enableToil", "true"),
+                    new Claim("enableOvertime", "true"),
+                    new Claim("enableAbsenceConflictsOutsideDepartments", "true"),
+                    new Claim("enableCarryover", "true"),
+                    new Claim("enableSelfCancelLeaveRequests", "true"),
+                    new Claim("enableEditMyInformation", "true"),
+                    new Claim("enableAcceptDeclineShifts", "true"),
+                    new Claim("enableTakeoverShifts", "true"),
+                    new Claim("enableBraudcastShiftSwap", "true"),
+                    new Claim("enableTwoStageApproval", "true"),
+                    // user roles and permissions
                     new Claim("userType", user.UserType.ToString()),
                     new Claim("enableAddEmployees", "true"),
                     new Claim("enableAddLateness", "true"),
@@ -57,30 +72,46 @@ namespace DeviseHR_Server.Common
                     new Claim("enableViewEmployeeSensitiveInformation", "true")
                 };
             }
-            else if (user.UserType == 2)
+            else if (user.UserType == 2 && ( user.Company != null && user.Role != null))
             {
                 claims = new List<Claim>
                 {
                     new Claim("id", user.Id.ToString()),
+                    // companyId and companySettings
+                    new Claim("companyId", user.Company.Id.ToString()),
+                    new Claim("enableSemiPersonalInformation", user.Company.EnableSemiPersonalInformation ? "true" : "false"),
+                    new Claim("enableShowEmployees", user.Company.EnableShowEmployees ? "true" : "false"),
+                    new Claim("enableToil", user.Company.EnableToil ? "true" : "false"),
+                    new Claim("enableOvertime", user.Company.EnableOvertime ? "true" : "false"),
+                    new Claim("enableAbsenceConflictsOutsideDepartments", user.Company.EnableAbsenceConflictsOutsideDepartments ? "true" : "false"),
+                    new Claim("enableCarryover", user.Company.EnableCarryover ? "true" : "false"),
+                    new Claim("enableSelfCancelLeaveRequests", user.Company.EnableSelfCancelLeaveRequests ? "true" : "false"),
+                    new Claim("enableEditMyInformation", user.Company.EnableEditMyInformation ? "true" : "false"),
+                    new Claim("enableAcceptDeclineShifts", user.Company.EnableAcceptDeclineShifts ? "true" : "false"),
+                    new Claim("enableTakeoverShifts", user.Company.EnableTakeoverShift ? "true" : "false"),
+                    new Claim("enableBroadcastShiftSwap", user.Company.EnableBroadcastShiftSwap ? "true" : "false"),
+                    new Claim("enableTwoStageApproval", user.Company.EnableRequireTwoStageApproval ? "true" : "false"),
+                    // user roles and permissions
                     new Claim("userType", user.UserType.ToString()),
-                    new Claim("enableAddEmployees", user.Role!.EnableAddEmployees ? "true" : "false"),
-                    new Claim("enableAddLateness", user.Role!.EnableAddLateness ? "true" : "false"),
-                    new Claim("enableAddManditoryLeave", user.Role!.EnableAddManditoryLeave ? "true" : "false"),
-                    new Claim("enableApproveAbsence", user.Role!.EnableApproveAbsence ? "true" : "false"),
-                    new Claim("enableCreatePattern", user.Role!.EnableCreatePattern ? "true" : "false"),
-                    new Claim("enableCreateRotas", user.Role!.EnableCreateRotas ? "true" : "false"),
-                    new Claim("enableDeleteEmployee", user.Role!.EnableDeleteEmployee ? "true" : "false"),
-                    new Claim("enableTerminateEmployees", user.Role!.EnableTerminateEmployees ? "true" : "false"),
-                    new Claim("enableViewEmployeeNotifications", user.Role!.EnableViewEmployeeNotifications ? "true" : "false"),
-                    new Claim("enableViewEmployeePayroll", user.Role!.EnableViewEmployeePayroll ? "true" : "false"),
-                    new Claim("enableViewEmployeeSensitiveInformation", user.Role!.EnableViewEmployeeSensitiveInformation ? "true" : "false")
+                    new Claim("enableAddEmployees", user.Role.EnableAddEmployees ? "true" : "false"),
+                    new Claim("enableAddLateness", user.Role.EnableAddLateness ? "true" : "false"),
+                    new Claim("enableAddManditoryLeave", user.Role.EnableAddManditoryLeave ? "true" : "false"),
+                    new Claim("enableApproveAbsence", user.Role.EnableApproveAbsence ? "true" : "false"),
+                    new Claim("enableCreatePattern", user.Role.EnableCreatePattern ? "true" : "false"),
+                    new Claim("enableCreateRotas", user.Role.EnableCreateRotas ? "true" : "false"),
+                    new Claim("enableDeleteEmployee", user.Role.EnableDeleteEmployee ? "true" : "false"),
+                    new Claim("enableTerminateEmployees", user.Role.EnableTerminateEmployees ? "true" : "false"),
+                    new Claim("enableViewEmployeeNotifications", user.Role.EnableViewEmployeeNotifications ? "true" : "false"),
+                    new Claim("enableViewEmployeePayroll", user.Role.EnableViewEmployeePayroll ? "true" : "false"),
+                    new Claim("enableViewEmployeeSensitiveInformation", user.Role.EnableViewEmployeeSensitiveInformation ? "true" : "false")
                 };
             }
-            else if (user.UserType == 3)
+            else if (user.UserType == 3 && user.Company != null)
             {
                 claims = new List<Claim>
                 {
                     new Claim("id", user.Id.ToString()),
+                    new Claim("companyId", user.Company.Id.ToString()),
                     new Claim("userType", user.UserType.ToString()),
                 };
             }

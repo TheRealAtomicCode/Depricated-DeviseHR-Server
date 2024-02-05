@@ -1,5 +1,8 @@
-﻿using DeviseHR_Server.Models;
+﻿using DeviseHR_Server.DTOs.ResponseDTOs;
+using DeviseHR_Server.Models;
 using DeviseHR_Server.Repositories;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.ComponentModel.Design;
 
 namespace DeviseHR_Server.Services.UserServices
 {
@@ -10,8 +13,16 @@ namespace DeviseHR_Server.Services.UserServices
 
             user.RefreshTokens.Clear();
             user.PasswordHash = "";
-
             return user;
+        }
+
+        public static async Task<List<FoundUser>> GetAllCompanyUsers(int myId, int companyId, int pageNo, int userType, bool enableShowEmployees)
+        {
+            // split services
+            List<FoundUser> users = await UserRepository.GetCompanyUsersById(myId, companyId, pageNo, userType, enableShowEmployees);
+
+
+            return users;
         }
     }
 }

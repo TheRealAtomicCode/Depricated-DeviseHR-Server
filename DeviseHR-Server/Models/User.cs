@@ -71,19 +71,19 @@ public partial class User
 
     public int UserType { get; set; }
 
-    public int? CompanyId { get; set; }
+    public int CompanyId { get; set; }
 
     public int? RoleId { get; set; }
 
     public virtual ICollection<Absence> Absences { get; set; } = new List<Absence>();
 
-    public virtual Company? Company { get; set; }
+    public virtual Company Company { get; set; } = null!;
 
     public virtual ICollection<Contract> Contracts { get; set; } = new List<Contract>();
 
+    public virtual ICollection<Hierarchy> HierarchyManagers { get; set; } = new List<Hierarchy>();
+
+    public virtual ICollection<Hierarchy> HierarchySubordinates { get; set; } = new List<Hierarchy>();
+
     public virtual Role? Role { get; set; }
-
-    public virtual ICollection<User> Managers { get; set; } = new List<User>();
-
-    public virtual ICollection<User> Subordinates { get; set; } = new List<User>();
 }
