@@ -18,9 +18,7 @@ namespace DeviseHR_Server.Services.UserServices
 
         public static async Task<List<FoundUser>> GetAllCompanyUsers(int myId, int companyId, int pageNo, int userType, bool enableShowEmployees)
         {
-            // split services
-            List<FoundUser> users = await UserRepository.GetCompanyUsersById(myId, companyId, pageNo, userType, enableShowEmployees);
-
+            List<FoundUser> users = await UserRepository.GetCompanyUsers(myId, companyId, pageNo, userType, enableShowEmployees);
 
             return users;
         }

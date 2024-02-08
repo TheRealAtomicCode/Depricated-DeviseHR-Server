@@ -12,20 +12,20 @@ namespace DeviseHR_Server.Repositories
     {
         public static async Task<User> GetUserByEmail(string email)
         {
-          
-                using (var db = new DeviseHrContext())
-                {
-                    var user = await db.Users.Where(u => u.Email == email)
-                        .Include(u => u.Company)
-                        .Include(u => u.Role).FirstOrDefaultAsync();
 
-                    if (user == null)
-                    {
-                        throw new Exception("Invalid Email or Password");
-                    }
+            var db = new DeviseHrContext();
+            
+            var user = await db.Users.Where(u => u.Email == email)
+                .Include(u => u.Company)
+                .Include(u => u.Role).FirstOrDefaultAsync();
 
-                    return user;
-                }
+            if (user == null)
+            {
+                throw new Exception("Invalid Email or Password");
+            }
+
+            return user;
+              
            
         }
 
@@ -33,82 +33,78 @@ namespace DeviseHR_Server.Repositories
         public static async Task<User> GetUserById(int userId)
         {
 
-            using (var db = new DeviseHrContext())
+            var db = new DeviseHrContext();
+            
+            var user = await db.Users.Where(u => u.Id == userId)
+                .Include(u => u.Company)
+                .Include(u => u.Role).FirstOrDefaultAsync();
+
+            if (user == null)
             {
-                var user = await db.Users.Where(u => u.Id == userId)
-                    .Include(u => u.Company)
-                    .Include(u => u.Role).FirstOrDefaultAsync();
-
-                if (user == null)
-                {
-                    throw new Exception("Invalid Email or Password");
-                }
-
-                return user;
+                throw new Exception("Invalid Email or Password");
             }
 
+            return user;
+           
         }
 
 
-        public static async Task<List<FoundUser>> GetCompanyUsersById(int myId, int companyId, int pageNo, int userType, bool enableShowEmployees)
+        public static async Task<List<FoundUser>> GetCompanyUsers(int myId, int companyId, int pageNo, int userType, bool enableShowEmployees)
         {
 
-            if (enableShowEmployees)
+            var db = new DeviseHrContext();
+
+            IQueryable<FoundUser>? query = null;
+
+            if (userType == 1 || enableShowEmployees)
             {
-                if (userType == 3)
-                {
-                    throw new Exception("Not allowed to view users");
-                }
-                else if (userType == 2)
-                {
-                    using (var db = new DeviseHrContext())
+                query = (
+                    from u in db.Users
+                    where u.CompanyId == companyId
+                    select new FoundUser
                     {
-
-                        var users = await (
-                            from u in db.Users
-                            join h in db.Hierarchies on u.Id equals h.ManagerId
-                            where h.ManagerId == myId && u.CompanyId == companyId
-                            select new FoundUser
-                            {
-                                Id = u.Id,
-                                CompanyId = u.CompanyId,
-                                FirstName = u.FirstName,
-                                LastName = u.LastName,
-                                Email = u.Email,
-                                UserType = u.UserType,
-                            })
-                            .ToListAsync();
-
-                        return users;
-                    }
-                }
-                else
-                {
-                    using (var db = new DeviseHrContext())
-                    {
-                            var users = await (
-                                from u in db.Users
-                                where u.CompanyId == companyId
-                                select new FoundUser
-                                {
-                                    Id = u.Id,
-                                    CompanyId = u.CompanyId,
-                                    FirstName = u.FirstName,
-                                    LastName = u.LastName,
-                                    Email = u.Email,
-                                    UserType = u.UserType,
-                                })
-                                .ToListAsync();
-
-                            return users;
-                    }
-                }
-                
-
-
-
+                        Id = u.Id,
+                        CompanyId = u.CompanyId,
+                        FirstName = u.FirstName,
+                        LastName = u.LastName,
+                        Email = u.Email,
+                        UserType = u.UserType,
+                    });
             }
+            else
+            {
+                if (userType == 3) throw new Exception("Not allowed to view users");
+
+                if (userType == 2)
+                {
+                    query = (
+                        from u in db.Users
+                        join h in db.Hierarchies
+                        on u.Id equals h.ManagerId
+                        where h.ManagerId == myId && u.CompanyId == companyId
+                        select new FoundUser
+                        {
+                            Id = u.Id,
+                            CompanyId = u.CompanyId,
+                            FirstName = u.FirstName,
+                            LastName = u.LastName,
+                            Email = u.Email,
+                            UserType = u.UserType,
+                        });
+                }
+            }
+
+            if (query == null) throw new Exception("No users found");
+
+            int pageSize = 200;
+            int skip = (pageNo - 1) * pageSize;
+            query = query.Skip(skip).Take(pageSize);
+
+            List<FoundUser> foundUsers = await query.ToListAsync();
+
+            return foundUsers;
         }
+       
 
         public static async Task<User> GetUserByIdAndRefreshToken(int userId, string refreshToken)
         {

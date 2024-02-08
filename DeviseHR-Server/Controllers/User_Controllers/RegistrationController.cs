@@ -41,12 +41,10 @@ namespace DeviseHR_Server.Controllers.User_Controllers
                 string clientJWT = Tokens.ExtractTokenFromRequestHeaders(HttpContext);
                 Tokens.ExtractClaimsFromToken(clientJWT, false, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
 
-                string myIdStr = claimsPrincipal.FindFirst("id")!.Value;
-                int userId = int.Parse(myIdStr);
-                string myUserTypeStr = claimsPrincipal.FindFirst("userType")!.Value;
-                int userType = int.Parse(myUserTypeStr);
+                int myId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
+                int userType = int.Parse(claimsPrincipal.FindFirst("userType")!.Value);
 
-                var serviceResponceUser = await RegistrationUserServices.RefreshUserToken(userId, refreshToken);
+                var serviceResponceUser = await RegistrationUserServices.RefreshUserToken(myId, refreshToken);
 
                 return Ok(serviceResponceUser);
             }
@@ -67,8 +65,7 @@ namespace DeviseHR_Server.Controllers.User_Controllers
                 string clientJWT = Tokens.ExtractTokenFromRequestHeaders(HttpContext);
                 Tokens.ExtractClaimsFromToken(clientJWT, false, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
 
-                string myIdStr = claimsPrincipal.FindFirst("id")!.Value;
-                int userId = int.Parse(myIdStr);
+                int userId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
 
                 await RegistrationUserServices.LogoutUserByRefreshToken(userId, refreshToken);
 
@@ -93,10 +90,9 @@ namespace DeviseHR_Server.Controllers.User_Controllers
                 string clientJWT = Tokens.ExtractTokenFromRequestHeaders(HttpContext);
                 Tokens.ExtractClaimsFromToken(clientJWT, false, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
 
-                string myIdStr = claimsPrincipal.FindFirst("id")!.Value;
-                int userId = int.Parse(myIdStr);
+                int myId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
 
-                await RegistrationUserServices.LogoutAllDevicesByUserId(userId);
+                await RegistrationUserServices.LogoutAllDevicesByUserId(myId);
 
                 var serviceResponse = new ServiceResponse<bool>(true, true, "");
 
@@ -114,7 +110,7 @@ namespace DeviseHR_Server.Controllers.User_Controllers
         {
             try
             {
-                await RegistrationUserServices.resetPasswordByEmail(email);
+                await RegistrationUserServices.resetPasswordByEmail(email.Trim());
 
                 var serviceResponse = new ServiceResponse<string>(email, true, "");
 

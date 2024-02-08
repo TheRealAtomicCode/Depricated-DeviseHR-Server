@@ -24,9 +24,8 @@ namespace DeviseHR_Server.Controllers.User_Controllers
                 string clientJWT = Tokens.ExtractTokenFromRequestHeaders(HttpContext);
                 Tokens.ExtractClaimsFromToken(clientJWT, false, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
 
-                string myIdStr = claimsPrincipal.FindFirst("id")!.Value;
-                int userId = int.Parse(myIdStr);
-
+                int myId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
+                
                 User myProfile = await ProfileService.GetMyProfile(userId);
 
                 var serviceResponse = new ServiceResponse<User>(myProfile, true, null!, null!);
@@ -50,20 +49,15 @@ namespace DeviseHR_Server.Controllers.User_Controllers
                 string clientJWT = Tokens.ExtractTokenFromRequestHeaders(HttpContext);
                 Tokens.ExtractClaimsFromToken(clientJWT, false, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
 
-                string myIdStr = claimsPrincipal.FindFirst("id")!.Value;
-                int myId = int.Parse(myIdStr);
-                string userTypeStr = claimsPrincipal.FindFirst("userType")!.Value;
-                int userType = int.Parse(userTypeStr);
-                string companyIdStr = claimsPrincipal.FindFirst("companyId")!.Value;
-                int companyId = int.Parse(companyIdStr);
-                string enableShowEmployeesStr = claimsPrincipal.FindFirst("enableShowEmployees")!.Value;
-                bool enableShowEmployees = bool.Parse(enableShowEmployeesStr);
-
+                int myId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
+                int userType = int.Parse(claimsPrincipal.FindFirst("userType")!.Value);
+                int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
+                bool enableShowEmployees = bool.Parse(claimsPrincipal.FindFirst("enableShowEmployees")!.Value);
 
 
                 List<FoundUser> users = await ProfileService.GetAllCompanyUsers(myId, companyId, pageNo, userType, enableShowEmployees);
 
-                var serviceResponse = new ServiceResponse<List<User>>(users, true, null!, null!);
+                var serviceResponse = new ServiceResponse<List<FoundUser>>(users, true, null!, null!);
 
                 return Ok(serviceResponse);
             }
