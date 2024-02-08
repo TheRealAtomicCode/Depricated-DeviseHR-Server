@@ -25,8 +25,9 @@ namespace DeviseHR_Server.Controllers.User_Controllers
                 Tokens.ExtractClaimsFromToken(clientJWT, false, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
 
                 int myId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
-                
-                User myProfile = await ProfileService.GetMyProfile(userId);
+                int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
+
+                User myProfile = await ProfileService.GetMyProfile(myId, companyId);
 
                 var serviceResponse = new ServiceResponse<User>(myProfile, true, null!, null!);
 

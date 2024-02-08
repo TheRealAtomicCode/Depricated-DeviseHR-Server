@@ -42,9 +42,10 @@ namespace DeviseHR_Server.Controllers.User_Controllers
                 Tokens.ExtractClaimsFromToken(clientJWT, false, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
 
                 int myId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
+                int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
                 int userType = int.Parse(claimsPrincipal.FindFirst("userType")!.Value);
 
-                var serviceResponceUser = await RegistrationUserServices.RefreshUserToken(myId, refreshToken);
+                var serviceResponceUser = await RegistrationUserServices.RefreshUserToken(myId, companyId, refreshToken);
 
                 return Ok(serviceResponceUser);
             }
@@ -66,8 +67,9 @@ namespace DeviseHR_Server.Controllers.User_Controllers
                 Tokens.ExtractClaimsFromToken(clientJWT, false, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
 
                 int userId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
+                int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
 
-                await RegistrationUserServices.LogoutUserByRefreshToken(userId, refreshToken);
+                await RegistrationUserServices.LogoutUserByRefreshToken(userId, companyId, refreshToken);
 
                 var serviceResponse = new ServiceResponse<bool>(true, true, "");
 
@@ -91,8 +93,9 @@ namespace DeviseHR_Server.Controllers.User_Controllers
                 Tokens.ExtractClaimsFromToken(clientJWT, false, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
 
                 int myId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
+                int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
 
-                await RegistrationUserServices.LogoutAllDevicesByUserId(myId);
+                await RegistrationUserServices.LogoutAllDevicesByUserId(myId, companyId);
 
                 var serviceResponse = new ServiceResponse<bool>(true, true, "");
 

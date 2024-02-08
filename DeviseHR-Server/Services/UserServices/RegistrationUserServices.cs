@@ -2,7 +2,7 @@
 using DeviseHR_Server.DTOs;
 using DeviseHR_Server.Helpers;
 using DeviseHR_Server.Models;
-using DeviseHR_Server.Repositories;
+using DeviseHR_Server.Repositories.UserRepository;
 using DeviseHR_Server.Services.EmailServices;
 using Microsoft.IdentityModel.Tokens;
 
@@ -32,9 +32,9 @@ namespace DeviseHR_Server.Services.UserServices
             return serviceResponse;
         }
 
-        public static async Task<ServiceResponse<User>> RefreshUserToken(int userId, string refreshToken)
+        public static async Task<ServiceResponse<User>> RefreshUserToken(int userId, int companyId, string refreshToken)
         {
-            User user = await UserRepository.GetUserByIdAndRefreshToken(userId, refreshToken);
+            User user = await UserRepository.GetUserByIdAndRefreshToken(userId, companyId, refreshToken);
 
             AccessMethods.VerifyUserAccess(user);
 
@@ -52,14 +52,14 @@ namespace DeviseHR_Server.Services.UserServices
             return serviceResponse;
         }
 
-        public static async Task LogoutUserByRefreshToken(int userId, string refreshToken)
+        public static async Task LogoutUserByRefreshToken(int userId, int companyId, string refreshToken)
         {
-            await RefreshTokenRepository.RemoveRefreshTokenByUserId(userId, refreshToken);
+            await RefreshTokenRepository.RemoveRefreshTokenByUserId(userId, companyId, refreshToken);
         }
 
-        public static async Task LogoutAllDevicesByUserId(int userId)
+        public static async Task LogoutAllDevicesByUserId(int userId, int companyId)
         {
-            await RefreshTokenRepository.ClearRefreshTokensListByUserId(userId);
+            await RefreshTokenRepository.ClearRefreshTokensListByUserId(userId, companyId);
         }
 
         public static async Task resetPasswordByEmail(string email)
@@ -77,6 +77,9 @@ namespace DeviseHR_Server.Services.UserServices
 
         public static async Task<ServiceResponse<User>> confirmVerificationCodeByEmail(string email, string verificationCode, string newPassword)
         {
+            StringValidation.ValidateEmail(email);
+            StringValidation.ValidateStrongPassword(newPassword);
+
             User user = await UserRepository.GetUserByEmail(email.Trim());
 
             if (user == null) throw new Exception("Invalid user credencials");

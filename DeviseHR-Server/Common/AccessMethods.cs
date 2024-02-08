@@ -1,7 +1,7 @@
 ﻿
 
 using DeviseHR_Server.Models;
-using DeviseHR_Server.Repositories;
+using DeviseHR_Server.Repositories.UserRepository;
 
 namespace DeviseHR_Server.Common
 {

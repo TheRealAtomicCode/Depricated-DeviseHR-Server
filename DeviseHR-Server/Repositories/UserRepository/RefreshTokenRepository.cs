@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
-namespace DeviseHR_Server.Repositories
+namespace DeviseHR_Server.Repositories.UserRepository.UserRepository
 {
     public class RefreshTokenRepository
     {
@@ -38,11 +38,11 @@ namespace DeviseHR_Server.Repositories
         }
 
 
-        public static async Task RemoveRefreshTokenByUserId(int userId, string refreshToken)
+        public static async Task RemoveRefreshTokenByUserId(int userId, int companyId, string refreshToken)
         {
             using (var db = new DeviseHrContext())
             {
-                User? user = await db.Users.Where(u => u.Id == userId).FirstOrDefaultAsync();
+                User? user = await db.Users.Where(u => u.Id == userId && u.CompanyId == companyId).FirstOrDefaultAsync();
 
                 if (user == null) throw new Exception("Invalid user credencials");
 
@@ -58,11 +58,11 @@ namespace DeviseHR_Server.Repositories
             }
         }
 
-        public static async Task ClearRefreshTokensListByUserId(int userId)
+        public static async Task ClearRefreshTokensListByUserId(int userId, int companyId)
         {
             using (var db = new DeviseHrContext())
             {
-                User? user = await db.Users.Where(u => u.Id == userId).FirstOrDefaultAsync();
+                User? user = await db.Users.Where(u => u.Id == userId && u.CompanyId == companyId).FirstOrDefaultAsync();
 
                 if (user == null) throw new Exception("Invalid user credencials");
 

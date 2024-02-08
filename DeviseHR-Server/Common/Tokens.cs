@@ -69,7 +69,8 @@ namespace DeviseHR_Server.Common
                     new Claim("enableTerminateEmployees", "true"),
                     new Claim("enableViewEmployeeNotifications", "true"),
                     new Claim("enableViewEmployeePayroll", "true"),
-                    new Claim("enableViewEmployeeSensitiveInformation", "true")
+                    new Claim("enableViewEmployeeSensitiveInformation", "true"),
+                    new Claim("annualLeaveStartDate", "true")
                 };
             }
             else if (user.UserType == 2 && ( user.Company != null && user.Role != null))
@@ -103,7 +104,8 @@ namespace DeviseHR_Server.Common
                     new Claim("enableTerminateEmployees", user.Role.EnableTerminateEmployees ? "true" : "false"),
                     new Claim("enableViewEmployeeNotifications", user.Role.EnableViewEmployeeNotifications ? "true" : "false"),
                     new Claim("enableViewEmployeePayroll", user.Role.EnableViewEmployeePayroll ? "true" : "false"),
-                    new Claim("enableViewEmployeeSensitiveInformation", user.Role.EnableViewEmployeeSensitiveInformation ? "true" : "false")
+                    new Claim("enableViewEmployeeSensitiveInformation", user.Role.EnableViewEmployeeSensitiveInformation ? "true" : "false"),
+                    new Claim("annualLeaveStartDate", user.Company.AnnualLeaveStartDate.ToString()!)
                 };
             }
             else if (user.UserType == 3 && user.Company != null)
