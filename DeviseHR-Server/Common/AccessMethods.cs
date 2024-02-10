@@ -30,7 +30,7 @@ namespace DeviseHR_Server.Common
 
             if (!isMatch)
             {
-                await UserRepository.IncrementLoginAttepts(user);
+                await EmployeeRepository.IncrementLoginAttepts(user);
                 throw new Exception("Invalid Email or Password");
             }
         }

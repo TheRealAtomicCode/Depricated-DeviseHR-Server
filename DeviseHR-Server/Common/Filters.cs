@@ -5,20 +5,14 @@ namespace DeviseHR_Server.Common
 {
     public class Filters
     {
-        public static TrimmedUserData filternewUserData(string firstName, string lastName, string email)
+        public static void filterNewUserData(NewUser user)
         {
-            firstName = firstName.Trim();
-            lastName = lastName.Trim();
-            email = email.ToLower().Trim();
-            StringValidation.ValidateNonEmptyStrings([firstName, lastName, email]);
-            StringValidation.ValidateEmail(email);
+            user.FirstName = user.FirstName.Trim();
+            user.LastName = user.LastName.Trim();
+            user.Email = user.Email.ToLower().Trim();
+            StringValidation.ValidateNonEmptyStrings([user.FirstName, user.LastName, user.Email]);
+            StringValidation.ValidateEmail(user.Email);
             
-            TrimmedUserData trimmedUser = new TrimmedUserData();
-            trimmedUser.FirstName = firstName;
-            trimmedUser.LastName = lastName;
-            trimmedUser.Email = email;
-            
-            return trimmedUser;
         }
     }
 }

@@ -9,6 +9,7 @@ namespace DeviseHR_Server.Common
     {
         public static async Task<string> GenerateUserAuthJWT(User user)
         {
+            string ddd = user.Company.AnnualLeaveStartDate.ToString();
             string? jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET");
 
             if (string.IsNullOrWhiteSpace(jwtSecret)) throw new Exception("Environment Error");
@@ -38,7 +39,7 @@ namespace DeviseHR_Server.Common
         {
             var claims = new List<Claim>();
 
-            if (user.UserType == 1 && (user.Company != null && user.Role != null))
+            if (user.UserType == 1)
             {
                 claims = new List<Claim>
                 {
@@ -70,10 +71,10 @@ namespace DeviseHR_Server.Common
                     new Claim("enableViewEmployeeNotifications", "true"),
                     new Claim("enableViewEmployeePayroll", "true"),
                     new Claim("enableViewEmployeeSensitiveInformation", "true"),
-                    new Claim("annualLeaveStartDate", "true")
+                    new Claim("annualLeaveStartDate", user.Company.AnnualLeaveStartDate.ToString()!)
                 };
             }
-            else if (user.UserType == 2 && ( user.Company != null && user.Role != null))
+            else if (user.UserType == 2 && user.Role != null)
             {
                 claims = new List<Claim>
                 {
@@ -108,13 +109,14 @@ namespace DeviseHR_Server.Common
                     new Claim("annualLeaveStartDate", user.Company.AnnualLeaveStartDate.ToString()!)
                 };
             }
-            else if (user.UserType == 3 && user.Company != null)
+            else if (user.UserType == 3)
             {
                 claims = new List<Claim>
                 {
                     new Claim("id", user.Id.ToString()),
                     new Claim("companyId", user.Company.Id.ToString()),
                     new Claim("userType", user.UserType.ToString()),
+                    new Claim("annualLeaveStartDate", user.Company.AnnualLeaveStartDate.ToString()!)
                 };
             }
 

@@ -9,7 +9,7 @@ namespace DeviseHR_Server.Services.UserServices
     public class ProfileService
     {
         public static async Task<User> GetMyProfile(int userId, int companyId) {
-            User user = await UserRepository.GetUserById(userId, companyId);
+            User user = await EmployeeRepository.GetUserById(userId, companyId);
 
             user.RefreshTokens.Clear();
             user.PasswordHash = "";
@@ -18,7 +18,7 @@ namespace DeviseHR_Server.Services.UserServices
 
         public static async Task<List<FoundUser>> GetAllCompanyUsers(int myId, int companyId, int pageNo, int userType, bool enableShowEmployees)
         {
-            List<FoundUser> users = await UserRepository.GetCompanyUsers(myId, companyId, pageNo, userType, enableShowEmployees);
+            List<FoundUser> users = await EmployeeRepository.GetCompanyUsers(myId, companyId, pageNo, userType, enableShowEmployees);
 
             return users;
         }

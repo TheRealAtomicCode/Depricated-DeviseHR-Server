@@ -3,6 +3,7 @@ using DeviseHR_Server.DTOs;
 using DeviseHR_Server.Helpers;
 using DeviseHR_Server.Models;
 using DeviseHR_Server.Repositories.UserRepository;
+using DeviseHR_Server.Repositories.UserRepository.UserRepository;
 using DeviseHR_Server.Services.EmailServices;
 using Microsoft.IdentityModel.Tokens;
 
@@ -12,7 +13,7 @@ namespace DeviseHR_Server.Services.UserServices
     {
         public static async Task<ServiceResponse<User>> LoginUserByCredencials(string email, string password)
         {
-            User user = await UserRepository.GetUserByEmail(email.Trim());
+            User user = await EmployeeRepository.GetUserByEmail(email.Trim());
 
             await AccessMethods.VerifyPassword(user, password);
 
@@ -34,7 +35,7 @@ namespace DeviseHR_Server.Services.UserServices
 
         public static async Task<ServiceResponse<User>> RefreshUserToken(int userId, int companyId, string refreshToken)
         {
-            User user = await UserRepository.GetUserByIdAndRefreshToken(userId, companyId, refreshToken);
+            User user = await EmployeeRepository.GetUserByIdAndRefreshToken(userId, companyId, refreshToken);
 
             AccessMethods.VerifyUserAccess(user);
 
@@ -66,13 +67,13 @@ namespace DeviseHR_Server.Services.UserServices
         {
             string verificationCode = StringGeneration.GenerateSixDigitString();
 
-            User user = await UserRepository.GetUserByEmail(email.Trim());
+            User user = await EmployeeRepository.GetUserByEmail(email.Trim());
 
             AccessMethods.VerifyUserAccess(user);
 
-            await UserRepository.UpdateUserVerificationCodeById(user.Id, verificationCode);
+            await EmployeeRepository.UpdateUserVerificationCodeByIdAndSaveChanges(user.Id, verificationCode);
 
-            SendNotificationService.SendUserRegistration(user.Email, user.FirstName, user.LastName, verificationCode);
+            await SendNotificationService.SendUserRegistration(user.Email, user.FirstName, user.LastName, verificationCode);
         }
 
         public static async Task<ServiceResponse<User>> confirmVerificationCodeByEmail(string email, string verificationCode, string newPassword)
@@ -80,7 +81,7 @@ namespace DeviseHR_Server.Services.UserServices
             StringValidation.ValidateEmail(email);
             StringValidation.ValidateStrongPassword(newPassword);
 
-            User user = await UserRepository.GetUserByEmail(email.Trim());
+            User user = await EmployeeRepository.GetUserByEmail(email.Trim());
 
             if (user == null) throw new Exception("Invalid user credencials");
 
@@ -99,7 +100,7 @@ namespace DeviseHR_Server.Services.UserServices
 
             string refreshToken = await Tokens.GenerateUserRefreshToken(user);
 
-            await UserRepository.ConfermVerificationCodeUpdatePasswordAndLoginUser(user, verificationCode, newPassword, refreshToken);
+            await EmployeeRepository.ConfermVerificationCodeUpdatePasswordAndLoginUser(user, verificationCode, newPassword, refreshToken);
 
             // clear data that user should not receive
             user.PasswordHash = string.Empty;

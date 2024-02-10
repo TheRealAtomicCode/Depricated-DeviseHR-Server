@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace DeviseHR_Server.Repositories.UserRepository
 {
-    public class UserRepository
+    public class EmployeeRepository
     {
         public static async Task<User> GetUserByEmail(string email)
         {
@@ -25,7 +25,6 @@ namespace DeviseHR_Server.Repositories.UserRepository
             }
 
             return user;
-
 
         }
 
@@ -125,7 +124,7 @@ namespace DeviseHR_Server.Repositories.UserRepository
         }
 
 
-        public static async Task UpdateUserVerificationCodeById(int userId, string verificationCode)
+        public static async Task UpdateUserVerificationCodeByIdAndSaveChanges(int userId, string verificationCode)
         {
             using (var db = new DeviseHrContext())
             {
@@ -182,3 +181,4 @@ namespace DeviseHR_Server.Repositories.UserRepository
 
     }
 }
+

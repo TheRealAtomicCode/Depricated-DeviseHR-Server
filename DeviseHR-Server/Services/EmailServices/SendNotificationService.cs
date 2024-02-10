@@ -1,17 +1,19 @@
-﻿
-namespace DeviseHR_Server.Services.EmailServices
+﻿namespace DeviseHR_Server.Services.EmailServices
 {
     public class SendNotificationService
     {
-        public static void SendUserRegistration(string recipient, string firstName, string lastName, string code)
+        public static async Task SendUserRegistration(string recipient, string firstName, string lastName, string code)
         {
             try
             {
+                // Simulate an async delay of 2 seconds
+              //  await Task.Delay(1000);
+
                 Console.WriteLine(recipient);
                 Console.WriteLine(firstName);
                 Console.WriteLine(lastName);
                 Console.WriteLine(code);
-                Console.WriteLine("fake email sent, Connect to SMTP Server for production");
+                Console.WriteLine("Fake email sent. Connect to SMTP Server for production.");
             }
             catch (Exception ex)
             {
@@ -20,5 +22,3 @@ namespace DeviseHR_Server.Services.EmailServices
         }
     }
 }
-
-

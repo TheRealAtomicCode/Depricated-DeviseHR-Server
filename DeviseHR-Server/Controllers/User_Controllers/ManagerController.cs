@@ -10,14 +10,14 @@ using static DeviseHR_Server.DTOs.RequestDTOs.ManagerRequests;
 
 namespace DeviseHR_Server.Controllers.User_Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/User/[controller]")]
     [ApiController]
     public class ManagerController : ControllerBase
     {
 
-        [HttpGet("addUser")]
-        [Authorize(Policy = "Employee")]
-        public async Task<ActionResult<ServiceResponse<bool>>> LogoutAllDevices([FromBody] NewUser newUser)
+        [HttpPost("addUser")]
+        [Authorize(Policy = "Manager")]
+        public async Task<ActionResult<ServiceResponse<NewUser>>> AddUser([FromBody] NewUser newUser)
         {
             try
             {
@@ -31,7 +31,7 @@ namespace DeviseHR_Server.Controllers.User_Controllers
 
                 await ManagerService.AddUser(newUser, myId, companyId, userType, companyAnnualLeaveDate);
 
-                var serviceResponse = new ServiceResponse<bool>(true, true, "");
+                var serviceResponse = new ServiceResponse<NewUser>(newUser, true, "");
 
                 return Ok(serviceResponse);
             }

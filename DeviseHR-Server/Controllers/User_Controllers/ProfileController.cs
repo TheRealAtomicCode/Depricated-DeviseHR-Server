@@ -11,7 +11,7 @@ using DeviseHR_Server.DTOs.ResponseDTOs;
 
 namespace DeviseHR_Server.Controllers.User_Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/User/[controller]")]
     [ApiController]
     public class ProfileController : ControllerBase
     {
