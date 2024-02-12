@@ -3,6 +3,7 @@ using DeviseHR_Server.Models;
 using DeviseHR_Server.Repositories;
 using DeviseHR_Server.Repositories.UserRepository;
 using DeviseHR_Server.Services.EmailServices;
+using System.ComponentModel.Design;
 using static DeviseHR_Server.DTOs.RequestDTOs.ManagerRequests;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -28,9 +29,18 @@ namespace DeviseHR_Server.Services.UserServices
             {
                 await SendNotificationService.SendUserRegistration(newUser.Email, newUser.FirstName, newUser.LastName, verificationCode);
             }
-
             return newUser;
         }
-        
+
+        public static async Task SendRegistration(int userId, int myId, int companyId, int userType)
+        {
+            User user = await ManagerRepository.UpdateUserVerificationCodeBuId(userId, myId, companyId, userType);
+
+            if (user.VerificationCode != null)
+            {
+                await SendNotificationService.SendUserRegistration(user.Email, user.FirstName, user.LastName, user.VerificationCode);
+            }
+        }
+
     }
 }

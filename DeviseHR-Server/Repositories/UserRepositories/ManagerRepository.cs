@@ -62,7 +62,40 @@ namespace DeviseHR_Server.Repositories.UserRepository
             return verificationCode;
         }
 
-    
+        public static async Task<User> UpdateUserVerificationCodeBuId(int userId, int myId, int companyId, int userType)
+        {
+            using (var db = new DeviseHrContext())
+            {
+                User? user = null;
+
+                if (userType == 1)
+                {
+                    user = await db.Users
+                        .FirstOrDefaultAsync(u => u.Id == userId && u.CompanyId == companyId);
+                }
+                else if (userType == 2)
+                {
+                    user = await db.Users
+                        .Include(u => u.HierarchySubordinates)
+                        .FirstOrDefaultAsync(u => u.Id == userId
+                            && u.CompanyId == companyId
+                            && u.HierarchySubordinates.Any(sub => sub.SubordinateId == userId && sub.ManagerId == myId));
+                }
+
+                if (user == null) throw new Exception("Failed to locate user");
+
+                // update verification code
+                if (user.IsVerified) throw new Exception("User already Registered");
+
+                string verificationCode = StringGeneration.GenerateSixDigitString();
+               
+                await db.SaveChangesAsync();
+
+                return user;
+            }
+        }
+
+
 
     }
     
