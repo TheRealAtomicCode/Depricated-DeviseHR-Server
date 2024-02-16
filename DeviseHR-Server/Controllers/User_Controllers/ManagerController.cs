@@ -70,5 +70,7 @@ namespace DeviseHR_Server.Controllers.User_Controllers
                 return BadRequest(serviceResponse);
             }
         }
+
+
     }
 }

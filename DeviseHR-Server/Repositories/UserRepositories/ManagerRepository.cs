@@ -10,7 +10,7 @@ namespace DeviseHR_Server.Repositories.UserRepository
 {
     public class ManagerRepository
     {
-        public static async Task<string?> InsertNewUser(NewUser newUser, int myId, int companyId)
+        public static async Task<string?> InsertNewUser(NewUser newUser, int myId, int companyId, int myUserType)
         {
             if (newUser.AnnualLeaveYearStartDate == null) throw new Exception("Unablable Company annual leave year start date");
             string? verificationCode = null;
@@ -32,9 +32,16 @@ namespace DeviseHR_Server.Repositories.UserRepository
 
             using (var db = new DeviseHrContext())
             {
+                // ! force add user as employee if manager
+                if (myUserType == 2)
+                {
+                    newUser.UserType = 3;
+                    newUser.RoleId = null;
+                }
+
                 db.Users.Add(user); // how to check if the email already exists error handle
 
-                if (newUser.UserType != 1)
+                if (myUserType == 2)
                 {
                     Hierarchy hierarchy = new Hierarchy 
                     { 
