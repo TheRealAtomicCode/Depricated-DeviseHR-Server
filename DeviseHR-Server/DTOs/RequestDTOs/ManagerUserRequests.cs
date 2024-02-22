@@ -1,6 +1,6 @@
 ﻿namespace DeviseHR_Server.DTOs.RequestDTOs
 {
-    public class ManagerRequests
+    public class ManagerUserRequests
     {
         public class NewUser
         {

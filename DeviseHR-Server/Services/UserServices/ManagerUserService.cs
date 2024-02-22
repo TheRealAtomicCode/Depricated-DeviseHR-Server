@@ -4,18 +4,18 @@ using DeviseHR_Server.Repositories;
 using DeviseHR_Server.Repositories.UserRepository;
 using DeviseHR_Server.Services.EmailServices;
 using System.ComponentModel.Design;
-using static DeviseHR_Server.DTOs.RequestDTOs.ManagerRequests;
+using static DeviseHR_Server.DTOs.RequestDTOs.ManagerUserRequests;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DeviseHR_Server.Services.UserServices
 {
-    public class ManagerService
+    public class ManagerUserService
     {
-        public static async Task<NewUser> AddUser(NewUser newUser, int myId, int companyId, int userType, DateOnly companyAnnualLeaveDate)
+        public static async Task<NewUser> AddUser(NewUser newUser, int myId, int companyId, int myUserType, DateOnly companyAnnualLeaveDate)
         {
             if (newUser.UserType != 1 && newUser.UserType != 2 && newUser.UserType != 3) throw new Exception("Invalid User Permission");
             // * check if manager, then make sure user being added is employee
-            if (userType == 2 && newUser.UserType != 3) throw new Exception("managers can only add users with an employee role");
+            if (myUserType == 2 && newUser.UserType != 3) throw new Exception("managers can only add users with an employee role");
             // * check if manager has a role
             if (newUser.UserType == 2 && (newUser.RoleId != null || newUser.RoleId <= 0)) throw new Exception("Managers must have a role assigned");
 
@@ -23,7 +23,7 @@ namespace DeviseHR_Server.Services.UserServices
 
             if (newUser.AnnualLeaveYearStartDate == null) newUser.AnnualLeaveYearStartDate = companyAnnualLeaveDate;
 
-            string? verificationCode = await ManagerRepository.InsertNewUser(newUser, myId, companyId);
+            string? verificationCode = await ManagerRepository.InsertNewUser(newUser, myId, companyId, myUserType);
 
             if(verificationCode != null)
             {

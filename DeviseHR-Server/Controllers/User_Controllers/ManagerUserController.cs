@@ -6,13 +6,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using static DeviseHR_Server.DTOs.RequestDTOs.ManagerRequests;
+using static DeviseHR_Server.DTOs.RequestDTOs.ManagerUserRequests;
 
 namespace DeviseHR_Server.Controllers.User_Controllers
 {
     [Route("api/User/[controller]")]
     [ApiController]
-    public class ManagerController : ControllerBase
+    public class ManagerUserController : ControllerBase
     {
 
         [HttpPost("addUser")]
@@ -30,7 +30,7 @@ namespace DeviseHR_Server.Controllers.User_Controllers
                 int userType = int.Parse(claimsPrincipal.FindFirst("userType")!.Value);
                 DateOnly companyAnnualLeaveDate = DateOnly.Parse(claimsPrincipal.FindFirst("annualLeaveStartDate")!.Value);
 
-                await ManagerService.AddUser(newUser, myId, companyId, userType, companyAnnualLeaveDate);
+                await ManagerUserService.AddUser(newUser, myId, companyId, userType, companyAnnualLeaveDate);
 
                 var serviceResponse = new ServiceResponse<NewUser>(newUser, true, "");
 
@@ -56,9 +56,9 @@ namespace DeviseHR_Server.Controllers.User_Controllers
 
                 int myId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
                 int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
-                int userType = int.Parse(claimsPrincipal.FindFirst("userType")!.Value);
+                int myUserType = int.Parse(claimsPrincipal.FindFirst("userType")!.Value);
 
-                await ManagerService.SendRegistration(userId, myId, companyId, userType);
+                await ManagerUserService.SendRegistration(userId, myId, companyId, myUserType);
 
                 var serviceResponse = new ServiceResponse<bool>(true, true, "");
 

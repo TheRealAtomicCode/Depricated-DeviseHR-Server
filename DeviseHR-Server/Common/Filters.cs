@@ -1,5 +1,6 @@
 ﻿using DeviseHR_Server.Helpers;
-using static DeviseHR_Server.DTOs.RequestDTOs.ManagerRequests;
+using static DeviseHR_Server.DTOs.RequestDTOs.ManagerUserRequests;
+using static DeviseHR_Server.DTOs.RequestDTOs.RoleRequests;
 
 namespace DeviseHR_Server.Common
 {
@@ -12,7 +13,12 @@ namespace DeviseHR_Server.Common
             user.Email = user.Email.ToLower().Trim();
             StringValidation.ValidateNonEmptyStrings([user.FirstName, user.LastName, user.Email]);
             StringValidation.ValidateEmail(user.Email);
-            
+        }
+
+        public static void filterNewRoleData(NewRole role)
+        {
+            role.Name = role.Name.Trim();
+            StringValidation.ValidateNonEmptyStrings([role.Name]);
         }
     }
 }
