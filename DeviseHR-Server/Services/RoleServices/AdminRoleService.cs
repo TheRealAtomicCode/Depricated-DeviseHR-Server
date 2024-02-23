@@ -11,13 +11,23 @@ namespace DeviseHR_Server.Services.RoleServices
     public class AdminRoleService
     {
 
-        public static async Task<Role> CreateRoleService(NewRole newRole, int myId, int companyId)
+        public static async Task<Role> CreateRoleService(RoleData newRole, int myId, int companyId)
         {
             Filters.filterNewRoleData(newRole);
 
             Role role = await AdminRoleRepository.CreateRoleRepo(newRole, myId, companyId);
            
             return role;
+        }
+
+        
+        public static async Task<Role> EditRoleService(RoleData roleData, int roleId, int myId, int companyId)
+        {
+            Filters.filterNewRoleData(roleData);
+
+            Role editedRole = await AdminRoleRepository.EditRoleRepo(roleData, roleId, myId, companyId);
+
+            return editedRole;
         }
 
         public static async Task<UserAndRolesDto> GetUsersAndRolesService(int myId, int companyId)

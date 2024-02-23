@@ -2,7 +2,7 @@
 {
     public class RoleRequests
     {
-        public class NewRole
+        public class RoleData
         {
             public string Name { get; set; } = null!;
             public bool EnableAddEmployees { get; set; }

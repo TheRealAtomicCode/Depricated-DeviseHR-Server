@@ -19,7 +19,7 @@ namespace DeviseHR_Server.Controllers.Role_Controllers
 
         [HttpPost("CreateRole")]
         [Authorize(Policy = "Admin")]
-        public async Task<ActionResult<ServiceResponse<Role>>> CreateRole(NewRole newRole)
+        public async Task<ActionResult<ServiceResponse<Role>>> CreateRole(RoleData newRole)
         {
             try
             {
@@ -32,6 +32,31 @@ namespace DeviseHR_Server.Controllers.Role_Controllers
                 Role role = await AdminRoleService.CreateRoleService(newRole, myId, companyId);
 
                 var serviceResponse = new ServiceResponse<Role>(role, true, "");
+
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                var serviceResponse = new ServiceResponse<Role>(null!, false, ex.Message);
+                return BadRequest(serviceResponse);
+            }
+        }
+
+        [HttpPost("EditRole/:roleId")]
+        [Authorize(Policy = "Admin")]
+        public async Task<ActionResult<ServiceResponse<Role>>> EditRole(int roleId, [FromBody] RoleData roleData)
+        {
+            try
+            {
+                string clientJWT = Tokens.ExtractTokenFromRequestHeaders(HttpContext);
+                Tokens.ExtractClaimsFromToken(clientJWT, false, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
+
+                int myId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
+                int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
+
+                Role editedRole = await AdminRoleService.EditRoleService(roleData, roleId, myId, companyId);
+
+                var serviceResponse = new ServiceResponse<Role>(editedRole, true, "");
 
                 return Ok(serviceResponse);
             }

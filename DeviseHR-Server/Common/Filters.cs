@@ -15,7 +15,7 @@ namespace DeviseHR_Server.Common
             StringValidation.ValidateEmail(user.Email);
         }
 
-        public static void filterNewRoleData(NewRole role)
+        public static void filterNewRoleData(RoleData role)
         {
             role.Name = role.Name.Trim();
             StringValidation.ValidateNonEmptyStrings([role.Name]);

@@ -8,7 +8,7 @@ namespace DeviseHR_Server.Repositories.RoleRepositories
 {
     public class AdminRoleRepository
     {
-        public static async Task<Role> CreateRoleRepo(NewRole newRole, int myId, int companyId)
+        public static async Task<Role> CreateRoleRepo(RoleData newRole, int myId, int companyId)
         {
             var db = new DeviseHrContext();
 
@@ -39,7 +39,34 @@ namespace DeviseHR_Server.Repositories.RoleRepositories
             return role;
         }
 
-        
+        public static async Task<Role> EditRoleRepo(RoleData roleData, int roleId, int myId, int companyId)
+        {
+            using var db = new DeviseHrContext();
+
+            Role? foundRole = await db.Roles.FirstOrDefaultAsync(r => r.Id == roleId && r.CompanyId == companyId);
+
+            if (foundRole == null) throw new Exception("Role not found");
+
+            foundRole.Name = roleData.Name;
+            foundRole.EnableAddEmployees = roleData.EnableAddEmployees;
+            foundRole.EnableAddLateness = roleData.EnableAddLateness;
+            foundRole.EnableApproveAbsence = roleData.EnableApproveAbsence;
+            foundRole.EnableAddManditoryLeave = roleData.EnableAddManditoryLeave;
+            foundRole.EnableCreatePattern = roleData.EnableCreatePattern;
+            foundRole.EnableCreateRotas = roleData.EnableCreateRotas;
+            foundRole.EnableDeleteEmployee = roleData.EnableDeleteEmployee;
+            foundRole.EnableTerminateEmployees = roleData.EnableTerminateEmployees;
+            foundRole.EnableViewEmployeeNotifications = roleData.EnableViewEmployeeNotifications;
+            foundRole.EnableViewEmployeePayroll = roleData.EnableViewEmployeePayroll;
+            foundRole.EnableViewEmployeeSensitiveInformation = roleData.EnableViewEmployeeSensitiveInformation;
+
+            await db.SaveChangesAsync();
+
+            return foundRole;
+        }
+
+
+
         public static async Task<UserAndRolesDto> GetUsersAndRolesRepo(int myId, int companyId)
         {
             var db = new DeviseHrContext();
