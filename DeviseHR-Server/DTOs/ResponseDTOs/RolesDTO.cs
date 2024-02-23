@@ -15,7 +15,7 @@ namespace DeviseHR_Server.DTOs.ResponseDTOs
 
     public class UserAndRolesDto
     {
-        public List<UserPermissionDetails> Users = new List<UserPermissionDetails>();
+        public List<UserPermissionDetails> Users { get; set; } = new List<UserPermissionDetails>();
         public List<Role> Roles { get; set; } = new List<Role>();
     }
 }
