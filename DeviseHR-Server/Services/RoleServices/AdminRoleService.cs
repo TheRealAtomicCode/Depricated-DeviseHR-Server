@@ -1,4 +1,5 @@
 ﻿using DeviseHR_Server.Common;
+using DeviseHR_Server.DTOs.ResponseDTOs;
 using DeviseHR_Server.Models;
 using DeviseHR_Server.Repositories.RoleRepositories;
 using System.ComponentModel.Design;
@@ -14,12 +15,18 @@ namespace DeviseHR_Server.Services.RoleServices
         {
             Filters.filterNewRoleData(newRole);
 
-            Role role = await AdminRoleRepository.CreateRole(newRole, myId, companyId);
+            Role role = await AdminRoleRepository.CreateRoleRepo(newRole, myId, companyId);
            
             return role;
         }
-           
 
-    
+        public static async Task<UserAndRolesDto> GetUsersAndRolesService(int myId, int companyId)
+        {
+            return await AdminRoleRepository.GetUsersAndRolesRepo(myId, companyId);
+        }
+
+
+
+
     }
 }
