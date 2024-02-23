@@ -1,6 +1,7 @@
-﻿using DeviseHR_Server.Helpers;
+﻿using DeviseHR_Server.DTOs.RequestDTOs;
+using DeviseHR_Server.Helpers;
 using static DeviseHR_Server.DTOs.RequestDTOs.ManagerUserRequests;
-using static DeviseHR_Server.DTOs.RequestDTOs.RoleRequests;
+
 
 namespace DeviseHR_Server.Common
 {

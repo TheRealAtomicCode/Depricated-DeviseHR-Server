@@ -1,10 +1,10 @@
 ﻿using DeviseHR_Server.Models;
-using static DeviseHR_Server.DTOs.RequestDTOs.ManagerRequests;
 using System.ComponentModel.Design;
 using DeviseHR_Server.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
 using DeviseHR_Server.Handlers.SqlExceptionHandlers;
+using static DeviseHR_Server.DTOs.RequestDTOs.ManagerUserRequests;
 
 namespace DeviseHR_Server.Repositories.UserRepository
 {

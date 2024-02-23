@@ -1,9 +1,9 @@
 ﻿using DeviseHR_Server.Common;
+using DeviseHR_Server.DTOs.RequestDTOs;
 using DeviseHR_Server.DTOs.ResponseDTOs;
 using DeviseHR_Server.Models;
 using DeviseHR_Server.Repositories.RoleRepositories;
 using System.ComponentModel.Design;
-using static DeviseHR_Server.DTOs.RequestDTOs.RoleRequests;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DeviseHR_Server.Services.RoleServices
@@ -33,6 +33,12 @@ namespace DeviseHR_Server.Services.RoleServices
         public static async Task<UserAndRolesDto> GetUsersAndRolesService(int myId, int companyId)
         {
             return await AdminRoleRepository.GetUsersAndRolesRepo(myId, companyId);
+        }
+
+        public static async Task EditUserTypesService(List<UsersRoles> usersRoles, int myId, int companyId)
+        {
+
+            await AdminRoleRepository.EditUserTypesRepo(usersRoles, myId, companyId);
         }
 
 

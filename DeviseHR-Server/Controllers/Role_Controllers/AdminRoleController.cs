@@ -1,5 +1,6 @@
 ﻿using DeviseHR_Server.Common;
 using DeviseHR_Server.DTOs;
+using DeviseHR_Server.DTOs.RequestDTOs;
 using DeviseHR_Server.DTOs.ResponseDTOs;
 using DeviseHR_Server.Models;
 using DeviseHR_Server.Services.RoleServices;
@@ -8,7 +9,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using static DeviseHR_Server.DTOs.RequestDTOs.RoleRequests;
 
 namespace DeviseHR_Server.Controllers.Role_Controllers
 {
@@ -42,7 +42,7 @@ namespace DeviseHR_Server.Controllers.Role_Controllers
             }
         }
 
-        [HttpPost("EditRole/:roleId")]
+        [HttpPatch("EditRole/{roleId}")]
         [Authorize(Policy = "Admin")]
         public async Task<ActionResult<ServiceResponse<Role>>> EditRole(int roleId, [FromBody] RoleData roleData)
         {
@@ -68,7 +68,7 @@ namespace DeviseHR_Server.Controllers.Role_Controllers
         }
 
 
-        [HttpPost("GetUsersAndRoles")]
+        [HttpGet("GetUsersAndRoles")]
         [Authorize(Policy = "Admin")]
         public async Task<ActionResult<ServiceResponse<UserAndRolesDto>>> GetUsersAndRoles()
         {
@@ -89,6 +89,31 @@ namespace DeviseHR_Server.Controllers.Role_Controllers
             catch (Exception ex)
             {
                 var serviceResponse = new ServiceResponse<UserAndRolesDto>(null!, false, ex.Message);
+                return BadRequest(serviceResponse);
+            }
+        }
+
+        [HttpPatch("EditUserTypes")]
+        [Authorize(Policy = "Admin")]
+        public async Task<ActionResult<ServiceResponse<string>>> EditUserTypes(List<UsersRoles> usersRoles)
+        {
+            try
+            {
+                string clientJWT = Tokens.ExtractTokenFromRequestHeaders(HttpContext);
+                Tokens.ExtractClaimsFromToken(clientJWT, false, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
+
+                int myId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
+                int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
+
+                await AdminRoleService.EditUserTypesService(usersRoles, myId, companyId);
+
+                var serviceResponse = new ServiceResponse<string>("ds", true, "");
+
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                var serviceResponse = new ServiceResponse<string>(null!, false, ex.Message);
                 return BadRequest(serviceResponse);
             }
         }

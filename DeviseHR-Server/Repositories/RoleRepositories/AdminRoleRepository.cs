@@ -1,8 +1,10 @@
-﻿using DeviseHR_Server.DTOs.ResponseDTOs;
+﻿using DeviseHR_Server.DTOs.RequestDTOs;
+using DeviseHR_Server.DTOs.ResponseDTOs;
 using DeviseHR_Server.Models;
 using Microsoft.EntityFrameworkCore;
-using static DeviseHR_Server.DTOs.RequestDTOs.RoleRequests;
+using System.Linq;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace DeviseHR_Server.Repositories.RoleRepositories
 {
@@ -12,7 +14,7 @@ namespace DeviseHR_Server.Repositories.RoleRepositories
         {
             var db = new DeviseHrContext();
 
-            Role? foundRole = await db.Roles.FirstOrDefaultAsync(r => r.Name == newRole.Name && r.CompanyId == companyId);
+            Role? foundRole = await db.Roles.Where(r => r.Name == newRole.Name && r.CompanyId == companyId).FirstOrDefaultAsync();
 
             if (foundRole != null) throw new Exception("Role name already exists");
 
@@ -33,8 +35,11 @@ namespace DeviseHR_Server.Repositories.RoleRepositories
             role.EnableViewEmployeeNotifications = newRole.EnableViewEmployeeNotifications;
             role.EnableViewEmployeePayroll = newRole.EnableViewEmployeePayroll;
             role.EnableViewEmployeeSensitiveInformation = newRole.EnableViewEmployeeSensitiveInformation;
+           
 
-            await db.AddAsync(newRole);
+            await db.AddAsync(role);
+
+            await db.SaveChangesAsync();
 
             return role;
         }
@@ -43,26 +48,34 @@ namespace DeviseHR_Server.Repositories.RoleRepositories
         {
             using var db = new DeviseHrContext();
 
-            Role? foundRole = await db.Roles.FirstOrDefaultAsync(r => r.Id == roleId && r.CompanyId == companyId);
+            Role? roleToUpdate = await db.Roles.FirstOrDefaultAsync(r => r.Id == roleId && r.CompanyId == companyId);
+            Role? roleWithSameName = await db.Roles.Where(r => r.Name == roleData.Name && r.CompanyId == companyId).FirstOrDefaultAsync();
 
-            if (foundRole == null) throw new Exception("Role not found");
+            if (roleToUpdate == null) throw new Exception("Role not found");
 
-            foundRole.Name = roleData.Name;
-            foundRole.EnableAddEmployees = roleData.EnableAddEmployees;
-            foundRole.EnableAddLateness = roleData.EnableAddLateness;
-            foundRole.EnableApproveAbsence = roleData.EnableApproveAbsence;
-            foundRole.EnableAddManditoryLeave = roleData.EnableAddManditoryLeave;
-            foundRole.EnableCreatePattern = roleData.EnableCreatePattern;
-            foundRole.EnableCreateRotas = roleData.EnableCreateRotas;
-            foundRole.EnableDeleteEmployee = roleData.EnableDeleteEmployee;
-            foundRole.EnableTerminateEmployees = roleData.EnableTerminateEmployees;
-            foundRole.EnableViewEmployeeNotifications = roleData.EnableViewEmployeeNotifications;
-            foundRole.EnableViewEmployeePayroll = roleData.EnableViewEmployeePayroll;
-            foundRole.EnableViewEmployeeSensitiveInformation = roleData.EnableViewEmployeeSensitiveInformation;
+            if(roleWithSameName != null)
+            {
+                if (roleData.Name == roleWithSameName.Name && roleToUpdate.Id != roleWithSameName.Id) throw new Exception("Role name already exists");
+            }
+
+            roleToUpdate.Name = roleData.Name;
+            roleToUpdate.EnableAddEmployees = roleData.EnableAddEmployees;
+            roleToUpdate.EnableAddLateness = roleData.EnableAddLateness;
+            roleToUpdate.EnableApproveAbsence = roleData.EnableApproveAbsence;
+            roleToUpdate.EnableAddManditoryLeave = roleData.EnableAddManditoryLeave;
+            roleToUpdate.EnableCreatePattern = roleData.EnableCreatePattern;
+            roleToUpdate.EnableCreateRotas = roleData.EnableCreateRotas;
+            roleToUpdate.EnableDeleteEmployee = roleData.EnableDeleteEmployee;
+            roleToUpdate.EnableTerminateEmployees = roleData.EnableTerminateEmployees;
+            roleToUpdate.EnableViewEmployeeNotifications = roleData.EnableViewEmployeeNotifications;
+            roleToUpdate.EnableViewEmployeePayroll = roleData.EnableViewEmployeePayroll;
+            roleToUpdate.EnableViewEmployeeSensitiveInformation = roleData.EnableViewEmployeeSensitiveInformation;
+            roleToUpdate.UpdatedAt = new DateTime();
+            roleToUpdate.UpdatedBy = myId;
 
             await db.SaveChangesAsync();
 
-            return foundRole;
+            return roleToUpdate;
         }
 
 
@@ -95,6 +108,97 @@ namespace DeviseHR_Server.Repositories.RoleRepositories
             };
 
             return userAndRolesDto;
+        }
+
+        
+        public static async Task EditUserTypesRepo(List<UsersRoles> usersRoles, int myId, int companyId)
+        {
+            var db = new DeviseHrContext();
+
+            List<int> existingRoleIds = await db.Roles
+                .Select(r => r.Id)
+                .ToListAsync();
+
+            List<int> userIds = usersRoles.Select(ur => ur.UserId).ToList();
+
+            List<User> existingUsers = await db.Users
+                .Where(u => userIds.Contains(u.Id) && u.CompanyId == companyId)
+                .ToListAsync();
+
+            if (existingUsers.Count != usersRoles.Count) throw new Exception("An Error occured while retrieving the users roles");
+
+
+            for (int i = 0; i < existingUsers.Count; i++)
+            {
+                var retrievedUser = usersRoles[i];
+                var existingUser = existingUsers[i];
+
+                if (retrievedUser.UserType != 1 && retrievedUser.UserType != 2 && retrievedUser.UserType != 3) throw new Exception("Invalid User Type provided");
+                
+                if(existingUser.UserType == 1 || existingUser.UserType == 3)
+                {
+                    existingUser.UserType = retrievedUser.UserType;
+                    existingUser.RoleId = null;
+                }
+                else
+                {
+                    if (existingUser.RoleId == null) throw new Exception("Role not specified");
+
+                    if (!existingRoleIds.Contains((int)existingUser.RoleId)) throw new Exception("Role ID does not exist.");
+
+                    existingUser.UserType = 2;
+                    existingUser.RoleId = retrievedUser.RoleId;
+                }
+            }
+
+            await db.SaveChangesAsync();
+
+
+
+
+            //List<int> userIds = new List<int>();
+            //List<int> userTypes = new List<int>();
+            //List<int>? roleIds = new List<int>();
+
+            //for (int index = 0; index < usersRoles.Count; index++)
+            //{
+            //    var u = usersRoles[index];
+
+            //    if (u.UserType != 1 && u.UserType != 2 && u.UserType != 3) throw new Exception("Invalid User Type provided");
+
+            //    userIds.Add(u.UserId);
+            //    userTypes.Add(u.UserType);
+            //    roleIds[index] = u.RoleId;
+            //}
+
+            //List<Role> companyRoles = await db.Roles
+            //    .Where(r => r.CompanyId == companyId)
+            //    .ToListAsync();
+
+            //usersRoles.ForEach(u => { 
+
+            //});
+
+            //List<UserPermissionDetails> users = await db.Users
+            //    .Where(u => u.CompanyId == myId)
+            //    .Select(u => new UserPermissionDetails
+            //    {
+            //        Id = u.Id,
+            //        FirstName = u.FirstName,
+            //        LastName = u.LastName,
+            //        Email = u.Email,
+            //        UserType = u.UserType,
+            //        RoleId = u.RoleId,
+            //    })
+            //    .ToListAsync();
+
+            //UserAndRolesDto userAndRolesDto = new UserAndRolesDto
+            //{
+            //    Roles = companyRoles,
+            //    Users = users
+            //};
+
+ 
         }
     }
 }
