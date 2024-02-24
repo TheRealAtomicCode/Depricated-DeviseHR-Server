@@ -117,5 +117,31 @@ namespace DeviseHR_Server.Controllers.Role_Controllers
                 return BadRequest(serviceResponse);
             }
         }
+
+
+        [HttpPatch("editSubordinates")]
+        [Authorize(Policy = "Admin")]
+        public async Task<ActionResult<ServiceResponse<string>>> EditSubordinates(ManagersAndSubordinates managersAndSubordinates)
+        {
+            try
+            {
+                string clientJWT = Tokens.ExtractTokenFromRequestHeaders(HttpContext);
+                Tokens.ExtractClaimsFromToken(clientJWT, false, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
+
+                int myId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
+                int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
+
+                await AdminRoleService.EditSubordinatesService(managersAndSubordinates, myId, companyId);
+
+                var serviceResponse = new ServiceResponse<string>("Subordinates Successfully edited", true, "");
+
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                var serviceResponse = new ServiceResponse<string>(null!, false, ex.Message);
+                return BadRequest(serviceResponse);
+            }
+        }
     }
 }

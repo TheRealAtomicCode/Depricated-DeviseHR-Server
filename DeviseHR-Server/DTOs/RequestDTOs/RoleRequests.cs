@@ -24,6 +24,13 @@
         public int? RoleId { get; set; }
     }
 
+    public class Subordinates
+    {
+        public List<int> ManagersToBeAdded { get; set; } = new List<int>();
+        public List<int> SubordinatesToBeAdded { get; set; } = new List<int>();
+        public List<int> ManagersToBeRemoved { get; set; } = new List<int>();
+        public List<int> SubordinatesToBeRemoved { get; set; } = new List<int>();
+    }
 
 }
 

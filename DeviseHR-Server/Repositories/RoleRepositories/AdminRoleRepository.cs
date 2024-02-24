@@ -160,5 +160,32 @@ namespace DeviseHR_Server.Repositories.RoleRepositories
             await db.SaveChangesAsync();
 
         }
+
+
+        public static async Task EditSubordinatesRepo(ManagersAndSubordinates managersAndSubordinates, int myId, int companyId)
+        {
+            var db = new DeviseHrContext();
+
+
+            // Connect to the database
+            await db.Database.OpenConnectionAsync();
+
+       
+            // Create a raw SQL query
+            var query = "SELECT * FROM edit_subordinates({0}, {1}, {2}, {3}, {4}, {5})";
+            var parameters = new object[]
+            {
+                managersAndSubordinates.ManagersToBeAdded,
+                managersAndSubordinates.SubordinatesToBeAdded,
+                managersAndSubordinates.ManagersToBeRemoved,
+                managersAndSubordinates.SubordinatesToBeRemoved,
+                myId,
+                companyId
+            };
+
+            // Execute the raw SQL query
+            await db.Database.ExecuteSqlRawAsync(query, parameters);
+
+        }
     }
 }

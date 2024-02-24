@@ -42,6 +42,18 @@ namespace DeviseHR_Server.Services.RoleServices
             await AdminRoleRepository.EditUserTypesRepo(usersRoles, myId, companyId);
         }
 
+        
+        public static async Task EditSubordinatesService(ManagersAndSubordinates managersAndSubordinates, int myId, int companyId)
+        {
+            if (managersAndSubordinates.ManagersToBeAdded.Count != managersAndSubordinates.ManagersToBeAdded.Count 
+                && managersAndSubordinates.ManagersToBeRemoved.Count != managersAndSubordinates.SubordinatesToBeRemoved.Count)
+            {
+                throw new Exception("Provided Managers and subordinates do not match");
+            }
+                
+            await AdminRoleRepository.EditSubordinatesRepo(managersAndSubordinates, myId, companyId);
+        }
+
 
 
 
