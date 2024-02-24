@@ -133,72 +133,32 @@ namespace DeviseHR_Server.Repositories.RoleRepositories
                 var retrievedUser = usersRoles[i];
                 var existingUser = existingUsers[i];
 
+                if (myId == retrievedUser.UserId) throw new Exception("Can not change your own Role");
+
                 if (retrievedUser.UserType != 1 && retrievedUser.UserType != 2 && retrievedUser.UserType != 3) throw new Exception("Invalid User Type provided");
                 
                 if(existingUser.UserType == 1 || existingUser.UserType == 3)
                 {
                     existingUser.UserType = retrievedUser.UserType;
                     existingUser.RoleId = null;
+                    existingUser.UpdatedAt = DateTime.Now;
+                    existingUser.UpdatedByUser = myId;
                 }
                 else
                 {
-                    if (existingUser.RoleId == null) throw new Exception("Role not specified");
+                    if (retrievedUser.RoleId == null) throw new Exception("Role not specified");
 
-                    if (!existingRoleIds.Contains((int)existingUser.RoleId)) throw new Exception("Role ID does not exist.");
+                    if (!existingRoleIds.Contains((int)retrievedUser.RoleId)) throw new Exception("Role ID does not exist.");
 
                     existingUser.UserType = 2;
                     existingUser.RoleId = retrievedUser.RoleId;
+                    existingUser.UpdatedAt = DateTime.Now;
+                    existingUser.UpdatedByUser = myId;
                 }
             }
 
             await db.SaveChangesAsync();
 
-
-
-
-            //List<int> userIds = new List<int>();
-            //List<int> userTypes = new List<int>();
-            //List<int>? roleIds = new List<int>();
-
-            //for (int index = 0; index < usersRoles.Count; index++)
-            //{
-            //    var u = usersRoles[index];
-
-            //    if (u.UserType != 1 && u.UserType != 2 && u.UserType != 3) throw new Exception("Invalid User Type provided");
-
-            //    userIds.Add(u.UserId);
-            //    userTypes.Add(u.UserType);
-            //    roleIds[index] = u.RoleId;
-            //}
-
-            //List<Role> companyRoles = await db.Roles
-            //    .Where(r => r.CompanyId == companyId)
-            //    .ToListAsync();
-
-            //usersRoles.ForEach(u => { 
-
-            //});
-
-            //List<UserPermissionDetails> users = await db.Users
-            //    .Where(u => u.CompanyId == myId)
-            //    .Select(u => new UserPermissionDetails
-            //    {
-            //        Id = u.Id,
-            //        FirstName = u.FirstName,
-            //        LastName = u.LastName,
-            //        Email = u.Email,
-            //        UserType = u.UserType,
-            //        RoleId = u.RoleId,
-            //    })
-            //    .ToListAsync();
-
-            //UserAndRolesDto userAndRolesDto = new UserAndRolesDto
-            //{
-            //    Roles = companyRoles,
-            //    Users = users
-            //};
-
- 
         }
     }
 }

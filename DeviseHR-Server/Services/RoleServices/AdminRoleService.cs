@@ -37,6 +37,7 @@ namespace DeviseHR_Server.Services.RoleServices
 
         public static async Task EditUserTypesService(List<UsersRoles> usersRoles, int myId, int companyId)
         {
+            if (usersRoles.Count == 0) throw new Exception("No changes to be made");
 
             await AdminRoleRepository.EditUserTypesRepo(usersRoles, myId, companyId);
         }
