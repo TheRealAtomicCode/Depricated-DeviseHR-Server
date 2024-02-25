@@ -59,7 +59,7 @@ namespace DeviseHR_Server.Services.RoleServices
         {
             if (managerId == myId) throw new Exception("Everyone is your subordinate");
 
-            return await AdminRoleRepository.GetSubordinatesByManagerIdRepo(managerId, myId, companyId);
+            return await AdminRoleRepository.GetSubordinatesByManagerIdRepo(managerId, companyId);
         }
 
 

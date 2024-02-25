@@ -190,7 +190,7 @@ namespace DeviseHR_Server.Repositories.RoleRepositories
 
 
 
-        public static async Task<List<RetrievedSubordinates>> GetSubordinatesByManagerIdRepo(int managerId, int myId, int companyId)
+        public static async Task<List<RetrievedSubordinates>> GetSubordinatesByManagerIdRepo(int managerId, int companyId)
         {
             var db = new DeviseHrContext();
 
@@ -200,12 +200,13 @@ namespace DeviseHR_Server.Repositories.RoleRepositories
                 from u in users
                 join h in db.Hierarchies on u.Id equals h.SubordinateId into subordinates
                 from s in subordinates.DefaultIfEmpty()
-                where u.CompanyId == companyId && u.Id != myId
+                where u.CompanyId == companyId && u.Id != managerId
                 select new RetrievedSubordinates
                 {
                     FirstName = u.FirstName,
                     LastName = u.LastName,
                     Email = u.Email,
+                    UserType = u.UserType,
                     Id = u.Id,
                     IsSubordinate = (s != null && s.ManagerId == managerId)
                 }
