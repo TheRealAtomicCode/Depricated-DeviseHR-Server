@@ -139,10 +139,37 @@ namespace DeviseHR_Server.Controllers.Role_Controllers
             }
             catch (Exception ex)
             {
-                string cleanedErrorMessage = ex.Message.Substring(ex.Message.IndexOf(": ") + 2);
+                string cleanedErrorMessage = ex.Message.Substring(ex.Message.IndexOf(":") + 2);
                 var serviceResponse = new ServiceResponse<string>(null!, false, cleanedErrorMessage);
                 return BadRequest(serviceResponse);
             }
         }
+
+        [HttpGet("getSubordinates/{managerId}")]
+        [Authorize(Policy = "Admin")]
+        public async Task<ActionResult<ServiceResponse<List<RetrievedSubordinates>>>> GetSubordinates(int managerId)
+        {
+            try
+            {
+                string clientJWT = Tokens.ExtractTokenFromRequestHeaders(HttpContext);
+                Tokens.ExtractClaimsFromToken(clientJWT, false, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
+
+                int myId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
+                int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
+
+                List<RetrievedSubordinates> retrievedSubordinates = await AdminRoleService.GetSubordinatesService(managerId, myId, companyId);
+
+                var serviceResponse = new ServiceResponse<List<RetrievedSubordinates>>(retrievedSubordinates, true, "");
+
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                var serviceResponse = new ServiceResponse<List<RetrievedSubordinates>>(null!, false, ex.Message);
+                return BadRequest(serviceResponse);
+            }
+        }
+
+
     }
 }

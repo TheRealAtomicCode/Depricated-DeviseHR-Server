@@ -55,6 +55,12 @@ namespace DeviseHR_Server.Services.RoleServices
         }
 
 
+        public static async Task<List<RetrievedSubordinates>> GetSubordinatesService(int managerId, int myId, int companyId)
+        {
+            if (managerId == myId) throw new Exception("Everyone is your subordinate");
+
+            return await AdminRoleRepository.GetSubordinatesByManagerIdRepo(managerId, myId, companyId);
+        }
 
 
     }

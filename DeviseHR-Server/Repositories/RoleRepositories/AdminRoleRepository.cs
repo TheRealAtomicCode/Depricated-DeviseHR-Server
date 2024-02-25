@@ -2,6 +2,7 @@
 using DeviseHR_Server.DTOs.ResponseDTOs;
 using DeviseHR_Server.Models;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.Design;
 using System.Linq;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -185,7 +186,37 @@ namespace DeviseHR_Server.Repositories.RoleRepositories
 
             // Execute the raw SQL query
             await db.Database.ExecuteSqlRawAsync(query, parameters);
-
         }
+
+
+
+        public static async Task<List<RetrievedSubordinates>> GetSubordinatesByManagerIdRepo(int managerId, int myId, int companyId)
+        {
+            var db = new DeviseHrContext();
+
+            var users = await db.Users.ToListAsync();
+
+            var userInfos = (
+                from u in users
+                join h in db.Hierarchies on u.Id equals h.SubordinateId into subordinates
+                from s in subordinates.DefaultIfEmpty()
+                where u.CompanyId == companyId && u.Id != myId
+                select new RetrievedSubordinates
+                {
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    Email = u.Email,
+                    Id = u.Id,
+                    IsSubordinate = (s != null && s.ManagerId == managerId)
+                }
+            ).ToList();
+
+            return userInfos;
+        }
+
     }
+
+
+
+
 }
