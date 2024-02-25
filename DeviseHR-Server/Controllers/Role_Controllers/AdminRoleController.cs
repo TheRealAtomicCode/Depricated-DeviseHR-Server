@@ -139,7 +139,8 @@ namespace DeviseHR_Server.Controllers.Role_Controllers
             }
             catch (Exception ex)
             {
-                var serviceResponse = new ServiceResponse<string>(null!, false, ex.Message);
+                string cleanedErrorMessage = ex.Message.Substring(ex.Message.IndexOf(": ") + 2);
+                var serviceResponse = new ServiceResponse<string>(null!, false, cleanedErrorMessage);
                 return BadRequest(serviceResponse);
             }
         }

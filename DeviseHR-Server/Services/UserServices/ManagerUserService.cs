@@ -17,7 +17,7 @@ namespace DeviseHR_Server.Services.UserServices
             // * check if manager, then make sure user being added is employee
             if (myUserType == 2 && newUser.UserType != 3) throw new Exception("managers can only add users with an employee role");
             // * check if manager has a role
-            if (newUser.UserType == 2 && (newUser.RoleId != null || newUser.RoleId <= 0)) throw new Exception("Managers must have a role assigned");
+            if (newUser.UserType == 2 && (newUser.RoleId == null || newUser.RoleId <= 0)) throw new Exception("Managers must have a role assigned");
 
             Filters.filterNewUserData(newUser);
 

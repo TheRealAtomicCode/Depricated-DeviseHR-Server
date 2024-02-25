@@ -25,7 +25,7 @@ namespace DeviseHR_Server.Repositories.UserRepository
                 UserType = newUser.UserType,
                 AddedByUser = myId,
                 AddedByOperator = 0,
-                RoleId = newUser.RoleId == 2 ? newUser.RoleId : null,
+                RoleId = newUser.UserType == 2 ? newUser.RoleId : null,
                 AnnualLeaveStartDate = newUser.AnnualLeaveYearStartDate.Value,
                 RefreshTokens = []
             };

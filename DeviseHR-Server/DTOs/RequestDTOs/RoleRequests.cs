@@ -24,7 +24,7 @@
         public int? RoleId { get; set; }
     }
 
-    public class Subordinates
+    public class ManagersAndSubordinates
     {
         public List<int> ManagersToBeAdded { get; set; } = new List<int>();
         public List<int> SubordinatesToBeAdded { get; set; } = new List<int>();
