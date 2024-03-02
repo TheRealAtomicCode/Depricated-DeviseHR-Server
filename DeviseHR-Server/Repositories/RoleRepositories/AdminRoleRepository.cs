@@ -111,7 +111,8 @@ namespace DeviseHR_Server.Repositories.RoleRepositories
             return userAndRolesDto;
         }
 
-        
+
+
         public static async Task EditUserTypesRepo(List<UsersRoles> usersRoles, int myId, int companyId)
         {
             var db = new DeviseHrContext();
@@ -123,11 +124,12 @@ namespace DeviseHR_Server.Repositories.RoleRepositories
             List<int> userIds = usersRoles.Select(ur => ur.UserId).ToList();
 
             List<User> existingUsers = await db.Users
+                .Include(u => u.HierarchyManagers)
+                .Include(u => u.HierarchySubordinates)
                 .Where(u => userIds.Contains(u.Id) && u.CompanyId == companyId)
                 .ToListAsync();
 
             if (existingUsers.Count != usersRoles.Count) throw new Exception("An Error occured while retrieving the users roles");
-
 
             for (int i = 0; i < existingUsers.Count; i++)
             {
@@ -137,9 +139,10 @@ namespace DeviseHR_Server.Repositories.RoleRepositories
                 if (myId == retrievedUser.UserId) throw new Exception("Can not change your own Role");
 
                 if (retrievedUser.UserType != 1 && retrievedUser.UserType != 2 && retrievedUser.UserType != 3) throw new Exception("Invalid User Type provided");
-                
-                if(existingUser.UserType == 1 || existingUser.UserType == 3)
+
+                if (retrievedUser.UserType == 1 || retrievedUser.UserType == 3)
                 {
+                    existingUser.HierarchyManagers.Clear();
                     existingUser.UserType = retrievedUser.UserType;
                     existingUser.RoleId = null;
                     existingUser.UpdatedAt = DateTime.Now;
@@ -151,16 +154,22 @@ namespace DeviseHR_Server.Repositories.RoleRepositories
 
                     if (!existingRoleIds.Contains((int)retrievedUser.RoleId)) throw new Exception("Role ID does not exist.");
 
+                    existingUser.HierarchySubordinates.Clear();
                     existingUser.UserType = 2;
                     existingUser.RoleId = retrievedUser.RoleId;
                     existingUser.UpdatedAt = DateTime.Now;
                     existingUser.UpdatedByUser = myId;
                 }
+
+
             }
+
+
 
             await db.SaveChangesAsync();
 
         }
+
 
 
         public static async Task EditSubordinatesRepo(ManagersAndSubordinates managersAndSubordinates, int myId, int companyId)

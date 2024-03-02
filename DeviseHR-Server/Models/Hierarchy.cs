@@ -7,11 +7,11 @@ public partial class Hierarchy
 {
     public int Id { get; set; }
 
-    public int? ManagerId { get; set; }
+    public int ManagerId { get; set; }
 
-    public int? SubordinateId { get; set; }
+    public int SubordinateId { get; set; }
 
-    public virtual User? Manager { get; set; }
+    public virtual User Manager { get; set; } = null!;
 
-    public virtual User? Subordinate { get; set; }
+    public virtual User Subordinate { get; set; } = null!;
 }
