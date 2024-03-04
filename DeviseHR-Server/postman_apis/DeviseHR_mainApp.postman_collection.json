@@ -88,7 +88,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"email\": \"user1@devisehr.com\",\r\n    \"password\": \"password123\"\r\n}",
+									"raw": "{\r\n    \"email\": \"user1@devisehr.com\",\r\n    \"password\": \"password1231\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -570,7 +570,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n  \"managersToBeAdded\": [\r\n    5\r\n  ],\r\n  \"subordinatesToBeAdded\": [\r\n    6\r\n  ],\r\n  \"managersToBeRemoved\": [\r\n    \r\n  ],\r\n  \"subordinatesToBeRemoved\": [\r\n    \r\n  ]\r\n}",
+									"raw": "{\r\n  \"managersToBeAdded\": [\r\n    2, 2\r\n  ],\r\n  \"subordinatesToBeAdded\": [\r\n    5, 6\r\n  ],\r\n  \"managersToBeRemoved\": [\r\n\r\n  ],\r\n  \"subordinatesToBeRemoved\": [\r\n\r\n  ]\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -598,7 +598,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{url}}/api/Roles/AdminRole/getSubordinates/5",
+									"raw": "{{url}}/api/Roles/AdminRole/getSubordinates/2",
 									"host": [
 										"{{url}}"
 									],
@@ -607,7 +607,7 @@
 										"Roles",
 										"AdminRole",
 										"getSubordinates",
-										"5"
+										"2"
 									]
 								}
 							},
@@ -644,6 +644,104 @@
 							}
 						}
 					]
+				}
+			]
+		},
+		{
+			"name": "Contracts",
+			"item": [
+				{
+					"name": "ManageContracts",
+					"item": [
+						{
+							"name": "CreateContract",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"userId\": 1,\r\n  \"patternId\": null,\r\n  \"contractType\": 1,\r\n  \"startDate\": \"2024-09-01\",\r\n  \"endDate\": null,\r\n  \"contractedWorkingHoursPerWeekInMinutes\": 0,\r\n  \"fullTimeWorkingHoursPerWeekInMinutes\": 0,\r\n  \"contractedWorkingDaysPerWeek\": 0,\r\n  \"averageWorkingDay\": 0,\r\n  \"isLeaveInDays\": true,\r\n  \"companiesFullTimeAnnualLeaveEntitlement\": 0,\r\n  \"contractedAnnualLeaveEntitlement\": 0,\r\n  \"thisYearsAnnualLeaveAllowance\": 0,\r\n  \"termTimeId\": null\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/ManageContract/CreateContract",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"ManageContract",
+										"CreateContract"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{usr-Token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{usr-Token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
 				}
 			]
 		}

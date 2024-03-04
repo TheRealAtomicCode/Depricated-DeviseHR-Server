@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 
 using DeviseHR_Server.DTOs.RequestDTOs;
 using DeviseHR_Server.Models;
+using DeviseHR_Server.Services.ContractServices;
 
 namespace DeviseHR_Server.Controllers.Contract_Controllers
 {
@@ -36,19 +37,8 @@ namespace DeviseHR_Server.Controllers.Contract_Controllers
 
                 int myId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
                 int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
-                int userType = int.Parse(claimsPrincipal.FindFirst("userType")!.Value);
-                DateOnly companyAnnualLeaveDate = DateOnly.Parse(claimsPrincipal.FindFirst("annualLeaveStartDate")!.Value);
 
-               // Contract addedContract = await ManagerContractService.AddContract(newConract, myId, companyId, userType, companyAnnualLeaveDate);
-               Contract addedContract = new Contract();
-                // complete this
-                // complete this
-                // complete this
-                // complete this
-                // complete this
-                // complete this
-                // complete this
-                // complete this
+                Contract addedContract = await ManagerContractService.AddContract(newConract, myId, companyId);
 
                 var serviceResponse = new ServiceResponse<Contract>(addedContract, true, "");
 
