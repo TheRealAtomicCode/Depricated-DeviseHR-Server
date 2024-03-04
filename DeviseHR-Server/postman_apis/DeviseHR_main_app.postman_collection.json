@@ -1,0 +1,651 @@
+{
+	"info": {
+		"_postman_id": "876311ba-f157-4956-8627-2133d76c7adb",
+		"name": "DeviseHR",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28902038"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Profile",
+					"item": [
+						{
+							"name": "Me",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/User/Profile/me",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"User",
+										"Profile",
+										"me"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{usr-Token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Logging",
+					"item": [
+						{
+							"name": "Login",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"if(pm.response.code === 200){\r",
+											"    pm.environment.set('usr-Token', pm.response.json().jwt);\r",
+											"    pm.environment.set('usr-refresh-token', pm.response.json().refreshToken);\r",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"user1@devisehr.com\",\r\n    \"password\": \"password123\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/User/Registration/login",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"User",
+										"Registration",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "RefreshToken",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"if(pm.response.code === 200){\r",
+											"    pm.environment.set('usr-Token', pm.response.json().jwt);\r",
+											"    pm.environment.set('usr-refresh-token', pm.response.json().refreshToken);\r",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "\"{{usr-refresh-token}}\"\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/User/Registration/refresh",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"User",
+										"Registration",
+										"refresh"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Password Reset",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"if(pm.response.code === 200){\r",
+											"    pm.environment.set('usr-Token', pm.response.json().jwt);\r",
+											"    pm.environment.set('usr-refresh-token', pm.response.json().refreshToken);\r",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "\"user1@devisehr.com\"\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/User/Registration/resetPassword",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"User",
+										"Registration",
+										"resetPassword"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Logout",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "\"{{usr-refresh-token}}\"",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/User/Registration/logout",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"User",
+										"Registration",
+										"logout"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Logout All Devices",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/User/Registration/logoutAllDevices",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"User",
+										"Registration",
+										"logoutAllDevices"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Forgot Password",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"if(pm.response.code === 200){\r",
+											"    pm.environment.set('email', pm.response.json().data);\r",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "\"user1@devisehr.com\"",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/User/Registration/resetPassword",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"User",
+										"Registration",
+										"resetPassword"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Confirm Reset Password",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"PassWord123\",\r\n    \"verificationCode\": \"8352687\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/User/api/Registration/confermResetPassword",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"User",
+										"api",
+										"Registration",
+										"confermResetPassword"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{usr-Token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Manager",
+					"item": [
+						{
+							"name": "AddUser",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"firstName\": \"man\",\r\n  \"lastName\": \"   Doe  \",\r\n  \"email\": \"jozhhgddsxc@xdceexscmle.com\",\r\n  \"userType\": 3,\r\n  \"roleId\": null,\r\n  \"registerUser\": false,\r\n  \"dateOfBirth\": \"2021-01-01\",\r\n  \"annualLeaveYearStartDate\": \"2012-01-01\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/User/ManagerUser/addUser",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"User",
+										"ManagerUser",
+										"addUser"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{usr-Token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Roles",
+			"item": [
+				{
+					"name": "Admin",
+					"item": [
+						{
+							"name": "Create Role",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"name\": \"hello\",\r\n  \"enableAddEmployees\": true,\r\n  \"enableTerminateEmployees\": true,\r\n  \"enableDeleteEmployee\": true,\r\n  \"enableCreatePattern\": true,\r\n  \"enableApproveAbsence\": true,\r\n  \"enableAddManditoryLeave\": true,\r\n  \"enableAddLateness\": true,\r\n  \"enableCreateRotas\": true,\r\n  \"enableViewEmployeeNotifications\": true,\r\n  \"enableViewEmployeePayroll\": true,\r\n  \"enableViewEmployeeSensitiveInformation\": true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/Roles/AdminRole/CreateRole",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"Roles",
+										"AdminRole",
+										"CreateRole"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Edit Role",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"name\": \"hello\",\r\n  \"enableAddEmployees\": true,\r\n  \"enableTerminateEmployees\": true,\r\n  \"enableDeleteEmployee\": true,\r\n  \"enableCreatePattern\": true,\r\n  \"enableApproveAbsence\": true,\r\n  \"enableAddManditoryLeave\": true,\r\n  \"enableAddLateness\": true,\r\n  \"enableCreateRotas\": true,\r\n  \"enableViewEmployeeNotifications\": true,\r\n  \"enableViewEmployeePayroll\": true,\r\n  \"enableViewEmployeeSensitiveInformation\": true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/Roles/AdminRole/EditRole/5",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"Roles",
+										"AdminRole",
+										"EditRole",
+										"5"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Users and Roles (When you go into the users and roles page)",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/Roles/AdminRole/GetUsersAndRoles",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"Roles",
+										"AdminRole",
+										"GetUsersAndRoles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Edit user types",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "[\r\n  {\r\n    \"userId\": 5,\r\n    \"userType\": 3,\r\n    \"roleId\": null\r\n  }\r\n]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/Roles/AdminRole/EditUserTypes",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"Roles",
+										"AdminRole",
+										"EditUserTypes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Edit Subordinates",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"managersToBeAdded\": [\r\n    5\r\n  ],\r\n  \"subordinatesToBeAdded\": [\r\n    6\r\n  ],\r\n  \"managersToBeRemoved\": [\r\n    \r\n  ],\r\n  \"subordinatesToBeRemoved\": [\r\n    \r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/Roles/AdminRole/editSubordinates",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"Roles",
+										"AdminRole",
+										"editSubordinates"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Subordinates by manager Id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/Roles/AdminRole/getSubordinates/5",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"Roles",
+										"AdminRole",
+										"getSubordinates",
+										"5"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{usr-Token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}
