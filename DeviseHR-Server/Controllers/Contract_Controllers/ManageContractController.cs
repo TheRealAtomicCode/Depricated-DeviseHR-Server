@@ -23,8 +23,6 @@ namespace DeviseHR_Server.Controllers.Contract_Controllers
         // Variable 2,
         // Agency 1
 
-
-
         [HttpPost("CreateContract")]
         [Authorize(Policy = "Manager")]
         [Authorize(Policy = "EnableAddEmployees")]
@@ -50,6 +48,9 @@ namespace DeviseHR_Server.Controllers.Contract_Controllers
                 return BadRequest(serviceResponse);
             }
         }
+
+
+
 
     }
 }

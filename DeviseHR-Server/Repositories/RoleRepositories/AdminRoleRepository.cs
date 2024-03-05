@@ -161,10 +161,7 @@ namespace DeviseHR_Server.Repositories.RoleRepositories
                     existingUser.UpdatedByUser = myId;
                 }
 
-
             }
-
-
 
             await db.SaveChangesAsync();
 
