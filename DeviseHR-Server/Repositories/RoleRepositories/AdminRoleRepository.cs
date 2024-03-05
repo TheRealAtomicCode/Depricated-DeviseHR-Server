@@ -221,6 +221,21 @@ namespace DeviseHR_Server.Repositories.RoleRepositories
             return userInfos;
         }
 
+
+        public static async Task<List<Role>> GetCompanyRolesByIdRepo(int companyId)
+        {
+            var db = new DeviseHrContext();
+
+            List<Role> companyRoles = await db.Roles
+                .Where(r => r.CompanyId == companyId)
+                .ToListAsync();
+
+            return companyRoles;
+        }
+
+
+
+
     }
 
 

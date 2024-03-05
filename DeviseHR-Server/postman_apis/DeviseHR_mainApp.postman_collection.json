@@ -612,55 +612,20 @@
 								}
 							},
 							"response": []
-						}
-					],
-					"auth": {
-						"type": "bearer",
-						"bearer": [
-							{
-								"key": "token",
-								"value": "{{usr-Token}}",
-								"type": "string"
-							}
-						]
-					},
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									""
-								]
-							}
 						},
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									""
-								]
-							}
-						}
-					]
-				},
-				{
-					"name": "Manager",
-					"item": [
 						{
 							"name": "Get Company Roles",
 							"request": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{url}}/api/ManagerRole/GetCompanyRoles",
+									"raw": "{{url}}/api/AdminRole/GetCompanyRoles",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"api",
-										"ManagerRole",
+										"AdminRole",
 										"GetCompanyRoles"
 									]
 								}

@@ -4,6 +4,8 @@ using DeviseHR_Server.DTOs.RequestDTOs;
 using DeviseHR_Server.Models;
 using DeviseHR_Server.Repositories.ContractRepositories;
 using Microsoft.AspNetCore.Http;
+using System.ComponentModel.Design;
+
 using System.Globalization;
 using System.Security.Claims;
 
@@ -53,8 +55,20 @@ namespace DeviseHR_Server.Services.ContractServices
                 CompanyId = companyId
             };
             Contract addedContract = await ManageContractRepository.AddContract(contract);
-
             return addedContract;
         }
+
+
+        public static async Task EndLastContractService(int userId, string endDate, int myId, int companyId, int userType)
+        {
+
+            await ManageContractRepository.EndLastContractRepo(userId, endDate, myId, companyId, userType);
+
+            
+        }
+
+
+
+
     }
 }

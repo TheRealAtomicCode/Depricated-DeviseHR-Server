@@ -50,6 +50,33 @@ namespace DeviseHR_Server.Controllers.Contract_Controllers
         }
 
 
+        [HttpPatch("EndLastContract/{userId}")]
+        [Authorize(Policy = "Manager")]
+        [Authorize(Policy = "EnableAddEmployees")]
+        public async Task<ActionResult<ServiceResponse<bool>>> EndLastContract([FromRoute] int userId, [FromBody] string endDate)
+        {
+            try
+            {
+                string clientJWT = Tokens.ExtractTokenFromRequestHeaders(HttpContext);
+                Tokens.ExtractClaimsFromToken(clientJWT, false, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
+
+                int myId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
+                int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
+                int userType = int.Parse(claimsPrincipal.FindFirst("userType")!.Value);
+
+                await ManagerContractService.EndLastContractService(userId, endDate, myId, companyId, userType);
+
+                var serviceResponse = new ServiceResponse<bool>(true, true, "");
+
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                var serviceResponse = new ServiceResponse<bool>(false, false, ex.Message);
+                return BadRequest(serviceResponse);
+            }
+        }
+
 
 
     }

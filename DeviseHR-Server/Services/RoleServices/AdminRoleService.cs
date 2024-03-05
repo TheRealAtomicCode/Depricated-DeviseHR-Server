@@ -63,5 +63,11 @@ namespace DeviseHR_Server.Services.RoleServices
         }
 
 
+        public static async Task<List<Role>> GetExistingRolesService(int companyId)
+        {
+            return await AdminRoleRepository.GetCompanyRolesByIdRepo(companyId);
+        }
+
+
     }
 }

@@ -171,5 +171,32 @@ namespace DeviseHR_Server.Controllers.Role_Controllers
         }
 
 
+        [HttpGet("GetCompanyRoles")]
+        [Authorize(Policy = "Admin")]
+        public async Task<ActionResult<ServiceResponse<List<Role>>>> GetCompanyRoles()
+        {
+            try
+            {
+                string clientJWT = Tokens.ExtractTokenFromRequestHeaders(HttpContext);
+                Tokens.ExtractClaimsFromToken(clientJWT, false, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
+
+                int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
+
+                List<Role> roles = await AdminRoleService.GetExistingRolesService(companyId);
+
+                var serviceResponse = new ServiceResponse<List<Role>>(roles, true, "");
+
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                var serviceResponse = new ServiceResponse<UserAndRolesDto>(null!, false, ex.Message);
+                return BadRequest(serviceResponse);
+            }
+        }
+
+
+
+
     }
 }
