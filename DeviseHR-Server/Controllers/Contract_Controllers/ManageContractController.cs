@@ -35,8 +35,9 @@ namespace DeviseHR_Server.Controllers.Contract_Controllers
 
                 int myId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
                 int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
+                int userType = int.Parse(claimsPrincipal.FindFirst("userType")!.Value);
 
-                Contract addedContract = await ManagerContractService.AddContract(newConract, myId, companyId);
+                Contract addedContract = await ManagerContractService.AddContract(newConract, myId, companyId, userType);
 
                 var serviceResponse = new ServiceResponse<Contract>(addedContract, true, "");
 

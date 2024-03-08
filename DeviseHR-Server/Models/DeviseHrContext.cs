@@ -222,20 +222,21 @@ public partial class DeviseHrContext : DbContext
             entity.Property(e => e.AverageWorkingDay)
                 .HasDefaultValue(480)
                 .HasColumnName("average_working_day");
-            entity.Property(e => e.CompaniesFullTimeAnnualLeaveEntitlement)
-                .HasDefaultValue(0)
-                .HasColumnName("companies_full_time_annual_leave_entitlement");
+            entity.Property(e => e.CompanyHoursPerWeekInMinutes).HasColumnName("company_hours_per_week_in_minutes");
             entity.Property(e => e.CompanyId).HasColumnName("company_id");
+            entity.Property(e => e.CompanyLeaveEntitlement)
+                .HasDefaultValue(0)
+                .HasColumnName("company_leave_entitlement");
             entity.Property(e => e.ContractType).HasColumnName("contract_type");
-            entity.Property(e => e.ContractedAnnualLeaveEntitlement)
+            entity.Property(e => e.ContractedDaysPerWeekInHalfs)
                 .HasDefaultValue(0)
-                .HasColumnName("contracted_annual_leave_entitlement");
-            entity.Property(e => e.ContractedWorkingDaysPerWeek)
-                .HasDefaultValue(0)
-                .HasColumnName("contracted_working_days_per_week");
-            entity.Property(e => e.ContractedWorkingHoursPerWeekInMinutes)
+                .HasColumnName("contracted_days_per_week_in_halfs");
+            entity.Property(e => e.ContractedHoursPerWeekInMinutes)
                 .HasDefaultValue(480)
-                .HasColumnName("contracted_working_hours_per_week_in_minutes");
+                .HasColumnName("contracted_hours_per_week_in_minutes");
+            entity.Property(e => e.ContractedLeaveEntitlement)
+                .HasDefaultValue(0)
+                .HasColumnName("contracted_leave_entitlement");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("timestamp without time zone")
@@ -243,16 +244,15 @@ public partial class DeviseHrContext : DbContext
             entity.Property(e => e.DiscardedId).HasColumnName("discarded_id");
             entity.Property(e => e.DiscardedXnumber).HasColumnName("discarded_xnumber");
             entity.Property(e => e.EndDate).HasColumnName("end_date");
-            entity.Property(e => e.FullTimeWorkingHoursPerWeekInMinutes).HasColumnName("full_time_working_hours_per_week_in_minutes");
             entity.Property(e => e.IsLeaveInDays)
                 .HasDefaultValue(true)
                 .HasColumnName("is_leave_in_days");
             entity.Property(e => e.PatternId).HasColumnName("pattern_id");
             entity.Property(e => e.StartDate).HasColumnName("start_date");
             entity.Property(e => e.TermTimeId).HasColumnName("term_time_id");
-            entity.Property(e => e.ThisYearsAnnualLeaveAllowence)
+            entity.Property(e => e.ThisContractsLeaveAllowence)
                 .HasDefaultValue(0)
-                .HasColumnName("this_years_annual_leave_allowence");
+                .HasColumnName("this_contracts_leave_allowence");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("timestamp without time zone")

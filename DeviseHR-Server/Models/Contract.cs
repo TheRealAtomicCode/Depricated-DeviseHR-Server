@@ -27,21 +27,21 @@ public partial class Contract
 
     public DateOnly? EndDate { get; set; }
 
-    public int ContractedWorkingHoursPerWeekInMinutes { get; set; }
+    public int ContractedHoursPerWeekInMinutes { get; set; }
 
-    public int FullTimeWorkingHoursPerWeekInMinutes { get; set; }
+    public int CompanyHoursPerWeekInMinutes { get; set; }
 
-    public int ContractedWorkingDaysPerWeek { get; set; }
+    public int ContractedDaysPerWeekInHalfs { get; set; }
 
     public int AverageWorkingDay { get; set; }
 
     public bool IsLeaveInDays { get; set; }
 
-    public int CompaniesFullTimeAnnualLeaveEntitlement { get; set; }
+    public int CompanyLeaveEntitlement { get; set; }
 
-    public int ContractedAnnualLeaveEntitlement { get; set; }
+    public int ContractedLeaveEntitlement { get; set; }
 
-    public int ThisYearsAnnualLeaveAllowence { get; set; }
+    public int ThisContractsLeaveAllowence { get; set; }
 
     public int? TermTimeId { get; set; }
 

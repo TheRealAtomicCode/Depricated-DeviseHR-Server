@@ -14,8 +14,10 @@ namespace DeviseHR_Server.Services.ContractServices
     public class ManagerContractService
     {
 
-        public static async Task<Contract> AddContract(CreateContractRequest newContract, int myId, int companyId)
+        public static async Task<Contract> AddContract(CreateContractRequest newContract, int myId, int companyId, int userType)
         {
+
+            if (userType > 1 && newContract.UserId == myId) throw new Exception("Managers can not end their own contracts");
 
             DateOnly startDate;
             DateOnly? endDate;
@@ -41,14 +43,14 @@ namespace DeviseHR_Server.Services.ContractServices
                 ContractType = newContract.ContractType,
                 StartDate = startDate,
                 EndDate = endDate,
-                ContractedWorkingHoursPerWeekInMinutes = newContract.ContractedWorkingHoursPerWeekInMinutes,
-                FullTimeWorkingHoursPerWeekInMinutes = newContract.FullTimeWorkingHoursPerWeekInMinutes,
-                ContractedWorkingDaysPerWeek = newContract.ContractedWorkingDaysPerWeek,
-                AverageWorkingDay = newContract.AverageWorkingDay,
+                ContractedHoursPerWeekInMinutes = newContract.ContractedHoursPerWeekInMinutes,
+                CompanyHoursPerWeekInMinutes = newContract.CompanyHoursPerWeekInMinutes,
+                ContractedDaysPerWeekInHalfs = newContract.ContractedDaysPerWeekInHalfs,
+                AverageWorkingDay = newContract.AvrageWorkingDay,
                 IsLeaveInDays = newContract.IsLeaveInDays,
-                CompaniesFullTimeAnnualLeaveEntitlement = newContract.CompaniesFullTimeAnnualLeaveEntitlement,
-                ContractedAnnualLeaveEntitlement = newContract.ContractedAnnualLeaveEntitlement,
-                ThisYearsAnnualLeaveAllowence = newContract.ThisYearsAnnualLeaveAllowance,
+                CompanyLeaveEntitlement = newContract.CompanyLeaveEntitlement,
+                ContractedLeaveEntitlement = newContract.ContractedLeaveEntitlement,
+                ThisContractsLeaveAllowence = newContract.ThisContractsLeaveAllowence,
                 TermTimeId = newContract.TermTimeId,
                 AddedBy = myId,
                 UpdatedBy = 0,
@@ -61,10 +63,10 @@ namespace DeviseHR_Server.Services.ContractServices
 
         public static async Task EndLastContractService(int userId, string endDate, int myId, int companyId, int userType)
         {
+            if (userType > 1 && userId == myId) throw new Exception("Managers can not end their own contracts");
 
             await ManageContractRepository.EndLastContractRepo(userId, endDate, myId, companyId, userType);
 
-            
         }
 
 
