@@ -55,6 +55,10 @@ builder.Services.AddAuthorization(options =>
 
     options.AddPolicy("EnableTerminateEmployees", policy =>
     policy.RequireClaim("enableTerminateEmployees", "true"));
+
+    // company
+    options.AddPolicy("EnableShowEmployees", policy =>
+    policy.RequireClaim("enableShowEmployees", "true"));
 });
 
 // add the CORS middleware to allow any origin
@@ -92,7 +96,7 @@ app.UseCors("AllowAnyOrigin");
 // must be above authorization
 app.UseAuthentication();
 
-app.UseAuthorization();
+app.UseAuthorization();                                                                                                 
 
 app.MapControllers();
 

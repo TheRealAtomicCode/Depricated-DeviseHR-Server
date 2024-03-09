@@ -69,6 +69,16 @@ namespace DeviseHR_Server.Services.ContractServices
 
         }
 
+        
+        public static async Task GetLeaveYearService(int userId, int myId, int companyId, int userType, bool enableShowEmployees)
+        {
+            bool checkIfSubordinate = true;
+            if((userType == 2 && enableShowEmployees == true) || userType == 1) checkIfSubordinate = false;
+
+            ManageContractRepository.GetLeaveYearRepo(userId, companyId, myId, checkIfSubordinate);
+
+        }
+
 
 
 

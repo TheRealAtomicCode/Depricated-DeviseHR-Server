@@ -80,5 +80,34 @@ namespace DeviseHR_Server.Controllers.Contract_Controllers
 
 
 
+        [HttpGet("GetLeaveYear/{userId}")]
+        [Authorize(Policy = "Manager")]
+        public async Task<ActionResult<ServiceResponse<bool>>> GetLeaveYear([FromRoute] int userId)
+        {
+            try
+            {
+                string clientJWT = Tokens.ExtractTokenFromRequestHeaders(HttpContext);
+                Tokens.ExtractClaimsFromToken(clientJWT, false, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtToken);
+
+                int myId = int.Parse(claimsPrincipal.FindFirst("id")!.Value);
+                int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
+                int userType = int.Parse(claimsPrincipal.FindFirst("userType")!.Value);
+                bool enableShowEmployees = bool.Parse(claimsPrincipal.FindFirst("enableShowEmployees")!.Value);
+
+                await ManagerContractService.GetLeaveYearService(userId, myId, companyId, userType, enableShowEmployees);
+
+                var serviceResponse = new ServiceResponse<bool>(true, true, "");
+
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                var serviceResponse = new ServiceResponse<bool>(false, false, ex.Message);
+                return BadRequest(serviceResponse);
+            }
+        }
+
+
+
     }
 }

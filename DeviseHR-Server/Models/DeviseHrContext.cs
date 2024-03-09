@@ -27,6 +27,8 @@ public partial class DeviseHrContext : DbContext
 
     public virtual DbSet<Hierarchy> Hierarchies { get; set; }
 
+    public virtual DbSet<LeaveYear> LeaveYears { get; set; }
+
     public virtual DbSet<Note> Notes { get; set; }
 
     public virtual DbSet<Operator> Operators { get; set; }
@@ -222,6 +224,9 @@ public partial class DeviseHrContext : DbContext
             entity.Property(e => e.AverageWorkingDay)
                 .HasDefaultValue(480)
                 .HasColumnName("average_working_day");
+            entity.Property(e => e.CompanyDaysPerWeekInHalfs)
+                .HasDefaultValue(0)
+                .HasColumnName("company_days_per_week_in_halfs");
             entity.Property(e => e.CompanyHoursPerWeekInMinutes).HasColumnName("company_hours_per_week_in_minutes");
             entity.Property(e => e.CompanyId).HasColumnName("company_id");
             entity.Property(e => e.CompanyLeaveEntitlement)
@@ -313,6 +318,45 @@ public partial class DeviseHrContext : DbContext
             entity.HasOne(d => d.Subordinate).WithMany(p => p.HierarchySubordinates)
                 .HasForeignKey(d => d.SubordinateId)
                 .HasConstraintName("fk_subordinate");
+        });
+
+        modelBuilder.Entity<LeaveYear>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("leave_year_pkey");
+
+            entity.ToTable("leave_year");
+
+            entity.HasIndex(e => new { e.LeaveYearYear, e.UserId }, "unique_leave_year_per_year_per_user").IsUnique();
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.AddedBy).HasColumnName("added_by");
+            entity.Property(e => e.CompanyId).HasColumnName("company_id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("created_at");
+            entity.Property(e => e.FullLeaveYearEntitlement)
+                .HasDefaultValue(0)
+                .HasColumnName("full_leave_year_entitlement");
+            entity.Property(e => e.LeaveYearStartDate)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("leave_year_start_date");
+            entity.Property(e => e.LeaveYearYear)
+                .HasComputedColumnSql("EXTRACT(year FROM leave_year_start_date)", true)
+                .HasColumnName("leave_year_year");
+            entity.Property(e => e.TotalLeaveAllowance)
+                .HasDefaultValue(0)
+                .HasColumnName("total_leave_allowance");
+            entity.Property(e => e.TotalLeaveEntitlement)
+                .HasDefaultValue(0)
+                .HasColumnName("total_leave_entitlement");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("updated_at");
+            entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
         });
 
         modelBuilder.Entity<Note>(entity =>

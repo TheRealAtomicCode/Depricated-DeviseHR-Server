@@ -33,6 +33,8 @@ public partial class Contract
 
     public int ContractedDaysPerWeekInHalfs { get; set; }
 
+    public int CompanyDaysPerWeekInHalfs { get; set; }
+
     public int AverageWorkingDay { get; set; }
 
     public bool IsLeaveInDays { get; set; }
