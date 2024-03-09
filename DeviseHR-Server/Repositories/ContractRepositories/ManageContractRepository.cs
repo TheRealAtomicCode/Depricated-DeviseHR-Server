@@ -31,7 +31,7 @@ namespace DeviseHR_Server.Repositories.ContractRepositories
 
 
         
-        public static async Task GetLeaveYearRepo(int userId, int companyId, int myId, bool checkIfSubordinate)
+        public static async Task<List<LeaveYear>> GetLeaveYearRepo(int userId, int companyId, int myId, bool checkIfSubordinate)
         {
             var db = new DeviseHrContext();
 
@@ -85,10 +85,7 @@ namespace DeviseHR_Server.Repositories.ContractRepositories
                 await db.SaveChangesAsync();
             }
 
-            // Select the leave years
-            // Your code for selecting the leave years goes here
-
-            Console.WriteLine();
+            return leaveYears;
         }
 
 
