@@ -29,7 +29,7 @@ namespace DeviseHR_Server.Services.UserServices
             user.RefreshTokens.Clear();
 
             var serviceResponse = new ServiceResponse<User>(user, true, "", token, refreshToken);
-    
+
             return serviceResponse;
         }
 

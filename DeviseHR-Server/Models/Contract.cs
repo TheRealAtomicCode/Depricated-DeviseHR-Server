@@ -41,7 +41,7 @@ public partial class Contract
 
     public int CompanyLeaveEntitlement { get; set; }
 
-    public int ContractedLeaveEntitlement { get; set; }
+    public double ContractedLeaveEntitlement { get; set; }
 
     public int ThisContractsLeaveAllowence { get; set; }
 

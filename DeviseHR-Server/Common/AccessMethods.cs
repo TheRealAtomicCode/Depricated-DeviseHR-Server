@@ -18,7 +18,7 @@ namespace DeviseHR_Server.Common
             string? loginAtteptsAllowed = Environment.GetEnvironmentVariable("LOGIN_ATTEPTS_ALLOWED");
 
             if (loginAtteptsAllowed == null) throw new Exception("Environment Error");
-            
+
             int loginAttemptsAllowed = int.Parse(loginAtteptsAllowed);
 
             if (user.LoginAttempt > loginAttemptsAllowed) throw new Exception("You have attempted to login multiple times unsuccessfully. Please contact your manager to regain access to your account.");

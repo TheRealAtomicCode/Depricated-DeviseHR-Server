@@ -25,7 +25,7 @@ namespace DeviseHR_Server.Common
             if (string.IsNullOrWhiteSpace(jwtExpTime)) throw new Exception("Environment Error");
 
             var token = new JwtSecurityToken(
-                expires: DateTime.UtcNow.AddMinutes(int.Parse(jwtExpTime)), 
+                expires: DateTime.UtcNow.AddMinutes(int.Parse(jwtExpTime)),
                 signingCredentials: credentials,
                 claims: claims // Add the claims to the token
             );
@@ -134,7 +134,7 @@ namespace DeviseHR_Server.Common
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(refreshJwtSecret));
 
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-            
+
             var claims = GenerateUserRefreshJwtClaims(user);
 
             string? jwtExpTime = Environment.GetEnvironmentVariable("EXPTIME");
@@ -168,7 +168,8 @@ namespace DeviseHR_Server.Common
         public static void ExtractClaimsFromToken(string clientJwt, bool isRefreshToken, out ClaimsPrincipal claimsPrincipal, out JwtSecurityToken jwtSecurityToken)
         {
             string envName;
-            if (isRefreshToken) {
+            if (isRefreshToken)
+            {
                 envName = "JWT_REFRESH_SECRET";
             }
             else

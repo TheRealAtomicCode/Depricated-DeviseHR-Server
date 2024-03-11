@@ -36,7 +36,7 @@ namespace DeviseHR_Server.Repositories.RoleRepositories
             role.EnableViewEmployeeNotifications = newRole.EnableViewEmployeeNotifications;
             role.EnableViewEmployeePayroll = newRole.EnableViewEmployeePayroll;
             role.EnableViewEmployeeSensitiveInformation = newRole.EnableViewEmployeeSensitiveInformation;
-           
+
 
             await db.AddAsync(role);
 
@@ -54,7 +54,7 @@ namespace DeviseHR_Server.Repositories.RoleRepositories
 
             if (roleToUpdate == null) throw new Exception("Role not found");
 
-            if(roleWithSameName != null)
+            if (roleWithSameName != null)
             {
                 if (roleData.Name == roleWithSameName.Name && roleToUpdate.Id != roleWithSameName.Id) throw new Exception("Role name already exists");
             }
@@ -92,14 +92,14 @@ namespace DeviseHR_Server.Repositories.RoleRepositories
             List<UserPermissionDetails> users = await db.Users
                 .Where(u => u.CompanyId == myId)
                 .Select(u => new UserPermissionDetails
-                    {
-                        Id = u.Id,
-                        FirstName = u.FirstName,
-                        LastName = u.LastName,
-                        Email = u.Email,
-                        UserType = u.UserType,
-                        RoleId = u.RoleId,
-                    })
+                {
+                    Id = u.Id,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    Email = u.Email,
+                    UserType = u.UserType,
+                    RoleId = u.RoleId,
+                })
                 .ToListAsync();
 
             UserAndRolesDto userAndRolesDto = new UserAndRolesDto
@@ -177,7 +177,7 @@ namespace DeviseHR_Server.Repositories.RoleRepositories
             // Connect to the database
             await db.Database.OpenConnectionAsync();
 
-       
+
             // Create a raw SQL query
             var query = "SELECT * FROM edit_subordinates({0}, {1}, {2}, {3}, {4}, {5})";
             var parameters = new object[]

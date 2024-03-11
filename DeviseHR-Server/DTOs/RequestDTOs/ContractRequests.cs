@@ -18,7 +18,7 @@
         public int CompanyDaysPerWeekInHalfs { get; set; } = 0;
         public int AvrageWorkingDay { get; set; } = 0;
         public int CompanyLeaveEntitlement { get; set; } = 0;
-        public int ContractedLeaveEntitlement { get; set; } = 0;
+        public double ContractedLeaveEntitlement { get; set; } = 0;
         public int ThisContractsLeaveAllowence { get; set; } = 0;
         public int? TermTimeId { get; set; } = null;
     }

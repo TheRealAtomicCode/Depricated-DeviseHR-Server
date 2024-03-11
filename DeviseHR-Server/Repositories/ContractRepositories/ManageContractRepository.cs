@@ -20,17 +20,17 @@ namespace DeviseHR_Server.Repositories.ContractRepositories
             return contract;
         }
 
-        
+
         public static async Task EndLastContractRepo(int userId, string endDate, int myId, int companyId, int userType)
         {
-            using (var dbContext = new DeviseHrContext()) 
+            using (var dbContext = new DeviseHrContext())
             {
                 await dbContext.Database.ExecuteSqlRawAsync("SELECT * FROM update_last_contract_end_date({0}, {1}, {2}, {3}, {4})", userId, myId, companyId, endDate, userType);
             }
         }
 
 
-        
+
         public static async Task<List<LeaveYear>> GetLeaveYearRepo(int userId, int companyId, int myId, bool checkIfSubordinate)
         {
             var db = new DeviseHrContext();
@@ -53,11 +53,11 @@ namespace DeviseHR_Server.Repositories.ContractRepositories
                 throw new Exception("Please create a contract");
             }
 
-            DateTime currentDate = DateTime.Now.Date;
-            DateTime currentDatePlusOneYear = currentDate.AddYears(1);
+            DateOnly currentDate = DateOnly.FromDateTime(DateTime.Now.Date);
+            DateOnly currentDatePlusOneYear = currentDate.AddYears(1);
 
             // Create all the leave years between the leave year start and the next year
-            DateTime leaveYearStartDate = leaveYears[leaveYearCount - 1].LeaveYearStartDate;
+            DateOnly leaveYearStartDate = leaveYears[leaveYearCount - 1].LeaveYearStartDate;
 
             if (leaveYearStartDate < currentDate)
             {
@@ -79,7 +79,7 @@ namespace DeviseHR_Server.Repositories.ContractRepositories
                     };
 
                     db.LeaveYears.Add(newLeaveYear);
-                  
+
                 }
 
                 await db.SaveChangesAsync();

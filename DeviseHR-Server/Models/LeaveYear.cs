@@ -19,7 +19,7 @@ public partial class LeaveYear
 
     public int? UpdatedBy { get; set; }
 
-    public DateTime LeaveYearStartDate { get; set; }
+    public DateOnly LeaveYearStartDate { get; set; }
 
     public int TotalLeaveEntitlement { get; set; }
 

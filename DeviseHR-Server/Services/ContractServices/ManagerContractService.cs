@@ -4,6 +4,11 @@ using DeviseHR_Server.DTOs.RequestDTOs;
 using DeviseHR_Server.Models;
 using DeviseHR_Server.Repositories.ContractRepositories;
 using DeviseHR_Server.Repositories.UserRepository;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using System.Globalization;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DeviseHR_Server.Services.ContractServices
 {
@@ -60,102 +65,158 @@ namespace DeviseHR_Server.Services.ContractServices
 
 
 
-        public static async Task<CreateContractRequest> CalculateLeaveYear(int userId, int myId, int companyId, int userType, CreateContractRequest contract)
+        public static async Task<CreateContractRequest> CalculateLeaveYear(int userId, int myId, int companyId, int userType, CreateContractRequest newContract)
         {
 
-            if (contract.ContractType == 1) throw new Exception("Contract does not require calculation");
+            if (newContract.ContractType == 1) throw new Exception("Contract does not require calculation");
 
-            if (contract.ContractType == 3) throw new Exception("Working Patterns need to be added first by the developers");
+            if (newContract.ContractType == 3) throw new Exception("Working Patterns need to be added first by the developers");
 
-            if (contract.TermTimeId != null) throw new Exception("Term times need to be added first by the developers");
+            if (newContract.TermTimeId != null) throw new Exception("Term times need to be added first by the developers");
 
-            int previousTotalLeaveEntitlement = 0;
-            DateTime? leaveYearStartDate = null;
-            DateTime? leaveYearEndDate = null;
+            DateOnly newContractStartDate = DateOnly.FromDateTime(DateTime.ParseExact(newContract.StartDate, "yyyy-MM-dd", CultureInfo.InvariantCulture));
+            List<Contract> contracts = new List<Contract>();
+            double firstHalfCalculation = 0;
+            double secondHalfCalculation = 0;
+            DateOnly EndOfCurrentLeaveYearOrContractWhicheverIsFirst = new DateOnly();
+            double result = 0;
 
+            var db = new DeviseHrContext();
 
-            if (contract.ContractType == 2)
+            //var leaveYear = await db.LeaveYears
+            //     .Where(ly => ly.LeaveYearStartDate <= newContractStartDate && newContractStartDate <= ly.LeaveYearStartDate.AddYears(1) && ly.UserId == userId)
+            //     .FirstOrDefaultAsync();
+
+            List<LeaveYear> leaveYears = await db.LeaveYears
+                .Where(ly => ly.UserId == userId)
+                .ToListAsync();
+
+            LeaveYear? currentLeaveYear = leaveYears.FirstOrDefault(ly =>
+                ly.LeaveYearStartDate <= newContractStartDate && newContractStartDate <= ly.LeaveYearStartDate.AddYears(1));
+
+            if (currentLeaveYear != null)
             {
-
-                var leaveYears = await ManageContractRepository.GetLeaveYearRepo(userId, companyId, myId, false);
-
-                if (contract.IsLeaveInDays == true && (contract.ContractedDaysPerWeekInHalfs == null || contract.CompanyDaysPerWeekInHalfs == null))
-                {
-                    throw new Exception("can not perform calculation for days");
-                }
-
-                if (contract.IsLeaveInDays == false && (contract.ContractedHoursPerWeekInMinutes != null && contract.CompanyHoursPerWeekInMinutes != null))
-                {
-                    throw new Exception("can not perform calculation for hours");
-                }
-
-
-                if (leaveYears.Count > 0)
-                {
-                    previousTotalLeaveEntitlement = leaveYears[leaveYears.Count - 1].TotalLeaveEntitlement;
-                    leaveYearStartDate = leaveYears[leaveYears.Count - 1].LeaveYearStartDate;
-                }
-                else
-                {
-                    var user = await EmployeeRepository.GetUserById(userId, companyId);
-
-                    if (user != null)
-                    {
-                        if (user.AnnualLeaveStartDate != null)
-                        {
-                            DateOnly userLeaveYearStartDate = user.AnnualLeaveStartDate;
-                            leaveYearStartDate = userLeaveYearStartDate.ToDateTime(TimeOnly.MinValue);
-                        }
-                        else
-                        {
-                            DateOnly companyLeaveYearStartDate = (DateOnly)user.Company.AnnualLeaveStartDate;
-                            leaveYearStartDate = companyLeaveYearStartDate.ToDateTime(TimeOnly.MinValue);
-
-                        }
-                    }
-
-                }
-
-                if (contract.EndDate == null)
-                {
-                    leaveYearEndDate = (DateTime)leaveYearStartDate?.AddYears(1);
-                }
-                else
-                {
-                    string endDateString = contract.EndDate;
-                    leaveYearEndDate = DateTime.Parse(endDateString);
-                }
-
-
-                if (contract.IsLeaveInDays == true)
-                {
-                    double annualLeaveEntitlement = (contract.ContractedDaysPerWeekInHalfs / contract.CompanyDaysPerWeekInHalfs) * contract.CompanyLeaveEntitlement;
-
-                    TimeSpan duration = (DateTime)leaveYearEndDate?.Date - (DateTime)leaveYearStartDate?.Date;
-                    int daysBetweenContractStartDateAndEndDate = duration.Days;
-
-                    int contractedLeave = (int)Math.Ceiling((double)annualLeaveEntitlement * daysBetweenContractStartDateAndEndDate / 365);
-
-                    contract.ContractedLeaveEntitlement = previousTotalLeaveEntitlement + contractedLeave;
-                }
-                if (contract.IsLeaveInDays == false)
-                {
-                    double annualLeaveEntitlement = (contract.ContractedHoursPerWeekInMinutes / contract.CompanyHoursPerWeekInMinutes) * contract.CompanyLeaveEntitlement;
-
-                    TimeSpan duration = (DateTime)leaveYearEndDate?.Date - (DateTime)leaveYearStartDate?.Date;
-                    int daysBetweenContractStartDateAndEndDate = duration.Days;
-
-                    int contractedLeave = (int)Math.Ceiling((double)annualLeaveEntitlement * daysBetweenContractStartDateAndEndDate / 365);
-
-                    contract.ContractedLeaveEntitlement = previousTotalLeaveEntitlement + contractedLeave;
-                }
-
+                contracts = await db.Contracts
+                    .Where(c => (c.StartDate >= currentLeaveYear.LeaveYearStartDate && c.StartDate < currentLeaveYear.LeaveYearStartDate.AddYears(1))
+                             || (c.EndDate >= currentLeaveYear.LeaveYearStartDate && c.EndDate < currentLeaveYear.LeaveYearStartDate.AddYears(1)))
+                    .ToListAsync();
 
             }
 
-                return contract;
+            if (contracts.Count > 0)
+            {
+                // check if previous contracts are same unit
+                if (contracts[0].IsLeaveInDays != newContract.IsLeaveInDays) throw new Exception("Can not add contract in different Leave unit as previous contract of same leave year");
+
+                // check new contract start date is after previous contract startDate
+                if (contracts[contracts.Count - 1].StartDate >= newContractStartDate) throw new Exception("New contract start date must be after previous contract start date in in order to calculate leave");
+
+                // calculate from start of (leave year or start of contract ( if no previous contracts exist before this one ) ) to start date of new contract
+                firstHalfCalculation = currentLeaveYear != null ? currentLeaveYear.FullLeaveYearEntitlement : 0;
+
+            }
+
+           
+
+            // calculate from start of new contract to end of leave year
+
+
+            if (newContract.EndDate != null && currentLeaveYear != null)
+            {
+                DateOnly endDate = DateOnly.ParseExact(newContract.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                if (endDate >= currentLeaveYear.LeaveYearStartDate.AddYears(1))
+                {
+                    EndOfCurrentLeaveYearOrContractWhicheverIsFirst = currentLeaveYear.LeaveYearStartDate.AddYears(1);
+                }
+                else
+                {
+                    EndOfCurrentLeaveYearOrContractWhicheverIsFirst = endDate;
+                }
+
+            }
+            else
+            {
+                if (currentLeaveYear != null)
+                {
+                    EndOfCurrentLeaveYearOrContractWhicheverIsFirst = currentLeaveYear.LeaveYearStartDate.AddYears(1);
+                }
+                else
+                {
+                    User user = await db.Users.FirstAsync<User>(u => u.Id == userId);
+
+                    int currentYear = newContractStartDate.Year;
+            
+                    DateTime leaveYearStartDateTime = new DateTime(currentYear, user.AnnualLeaveStartDate.Month, user.AnnualLeaveStartDate.Day);
+                    DateOnly leaveYearEndDate = DateOnly.FromDateTime(leaveYearStartDateTime).AddYears(1);
+
+                    if(leaveYearEndDate < newContractStartDate)
+                    {
+                        EndOfCurrentLeaveYearOrContractWhicheverIsFirst = leaveYearEndDate.AddYears(1);
+                    }
+                    else
+                    {
+                        EndOfCurrentLeaveYearOrContractWhicheverIsFirst = leaveYearEndDate;
+                    }
+
+                   
+                }
+            }
+
+            string endDateString = EndOfCurrentLeaveYearOrContractWhicheverIsFirst.ToString("yyyy-MM-dd");
+
+           
+           
+
+            if (newContract.IsLeaveInDays)
+            {
+                secondHalfCalculation = CalculateLeave(newContract.StartDate, endDateString, newContract.CompanyLeaveEntitlement, newContract.ContractedDaysPerWeekInHalfs, newContract.CompanyDaysPerWeekInHalfs);
+                string previousEnddate = EndOfCurrentLeaveYearOrContractWhicheverIsFirst.AddYears(-1).ToString("yyyy-MM-dd");
+                firstHalfCalculation = CalculatePreviousLeave(previousEnddate, newContract.StartDate, firstHalfCalculation);
+                result = firstHalfCalculation + secondHalfCalculation;
+                newContract.ContractedLeaveEntitlement = result;
+            }
+            else
+            {
+                secondHalfCalculation = CalculateLeave(newContract.StartDate, endDateString, newContract.CompanyLeaveEntitlement, newContract.ContractedHoursPerWeekInMinutes, newContract.CompanyHoursPerWeekInMinutes);
+                string previousEnddate = EndOfCurrentLeaveYearOrContractWhicheverIsFirst.AddYears(-1).ToString("yyyy-MM-dd");
+                firstHalfCalculation = CalculatePreviousLeave(previousEnddate, newContract.StartDate, firstHalfCalculation);
+                result = firstHalfCalculation + secondHalfCalculation;
+                newContract.ContractedLeaveEntitlement = result;
+            }
+
+
+            return newContract;
 
         }
+
+        public static double CalculatePreviousLeave(string fromDate, string toDate, double previousLeaveEntitlement)
+        {
+            DateTime fromDateTime = DateTime.ParseExact(fromDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+            DateTime toDateTime = DateTime.ParseExact(toDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+            int numberOfDays = toDateTime.Subtract(fromDateTime).Days;
+
+            double result = previousLeaveEntitlement * ((double)numberOfDays / 365);
+
+            return result;
+        }
+
+        public static double CalculateLeave(string fromDate, string toDate, int companyLeaveEntitlement, int employeeWorkingTime, int comanyWorkingTime)
+        {
+            double contractedToCompanyRatio = (double)employeeWorkingTime / (double)comanyWorkingTime;
+            double contractedLeaveEntitlementInAYear = (double)companyLeaveEntitlement * contractedToCompanyRatio;
+
+            DateTime fromDateTime = DateTime.ParseExact(fromDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+            DateTime toDateTime = DateTime.ParseExact(toDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+            int numberOfDays = toDateTime.Subtract(fromDateTime).Days;
+
+            double result = contractedLeaveEntitlementInAYear * ((double)numberOfDays / 365 );
+
+            return result;
+        }
+
+
 
 
         public static async Task EndLastContractService(int userId, string endDate, int myId, int companyId, int userType)
@@ -163,7 +224,6 @@ namespace DeviseHR_Server.Services.ContractServices
             if (userType > 1 && userId == myId) throw new Exception("Managers can not end their own contracts");
 
             await ManageContractRepository.EndLastContractRepo(userId, endDate, myId, companyId, userType);
-
         }
 
 

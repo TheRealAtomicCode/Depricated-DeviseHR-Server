@@ -8,7 +8,8 @@ namespace DeviseHR_Server.Services.UserServices
 {
     public class ProfileService
     {
-        public static async Task<User> GetMyProfile(int userId, int companyId) {
+        public static async Task<User> GetMyProfile(int userId, int companyId)
+        {
             User user = await EmployeeRepository.GetUserById(userId, companyId);
 
             user.RefreshTokens.Clear();

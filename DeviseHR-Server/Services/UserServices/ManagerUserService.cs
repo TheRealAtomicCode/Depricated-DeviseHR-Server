@@ -25,7 +25,7 @@ namespace DeviseHR_Server.Services.UserServices
 
             string? verificationCode = await ManagerRepository.InsertNewUser(newUser, myId, companyId, myUserType);
 
-            if(verificationCode != null)
+            if (verificationCode != null)
             {
                 await SendNotificationService.SendUserRegistration(newUser.Email, newUser.FirstName, newUser.LastName, verificationCode);
             }

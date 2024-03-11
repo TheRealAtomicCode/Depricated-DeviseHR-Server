@@ -96,7 +96,7 @@ app.UseCors("AllowAnyOrigin");
 // must be above authorization
 app.UseAuthentication();
 
-app.UseAuthorization();                                                                                                 
+app.UseAuthorization();
 
 app.MapControllers();
 

@@ -43,15 +43,15 @@ namespace DeviseHR_Server.Repositories.UserRepository
 
                 if (myUserType == 2)
                 {
-                    Hierarchy hierarchy = new Hierarchy 
-                    { 
+                    Hierarchy hierarchy = new Hierarchy
+                    {
                         ManagerId = myId,
                         SubordinateId = user.Id
                     };
 
                     db.Hierarchies.Add(hierarchy);
                 }
-                
+
                 // update verification code
                 if (newUser.RegisterUser == true) verificationCode = StringGeneration.GenerateSixDigitString();
                 if (newUser.RegisterUser == true) user.VerificationCode = verificationCode!;
@@ -95,7 +95,7 @@ namespace DeviseHR_Server.Repositories.UserRepository
                 if (user.IsVerified) throw new Exception("User already Registered");
 
                 string verificationCode = StringGeneration.GenerateSixDigitString();
-               
+
                 await db.SaveChangesAsync();
 
                 return user;
@@ -106,8 +106,8 @@ namespace DeviseHR_Server.Repositories.UserRepository
 
 
     }
-    
-        
+
+
 
 
 }
