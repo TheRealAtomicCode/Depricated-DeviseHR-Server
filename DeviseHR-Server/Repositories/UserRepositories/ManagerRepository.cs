@@ -17,6 +17,7 @@ namespace DeviseHR_Server.Repositories.UserRepository
 
             User user = new User
             {
+                Id  = newUser.Id,
                 CompanyId = companyId,
                 FirstName = newUser.FirstName,
                 LastName = newUser.LastName,
