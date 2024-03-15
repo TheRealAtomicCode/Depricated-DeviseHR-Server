@@ -65,7 +65,7 @@ namespace DeviseHR_Server.Services.ContractServices
 
 
 
-        public static async Task<CreateContractRequest> CalculateLeaveYear(int userId, int myId, int companyId, int userType, CreateContractRequest newContract)
+        public static async Task<CreateContractRequest> CalculateLeaveYear(int userId, CreateContractRequest newContract)
         {
 
             if (newContract.ContractType == 1) throw new Exception("Contract does not require calculation");
@@ -81,27 +81,8 @@ namespace DeviseHR_Server.Services.ContractServices
             DateOnly EndOfCurrentLeaveYearOrContractWhicheverIsFirst = new DateOnly();
             double result = 0;
 
-            var db = new DeviseHrContext();
+            CalculateLeaveYearDtoFromRepoToService data = await ManageContractRepository.GetContractAndLeaveYearInfoForCalculation(userId, newContractStartDate);
 
-            //var leaveYear = await db.LeaveYears
-            //     .Where(ly => ly.LeaveYearStartDate <= newContractStartDate && newContractStartDate <= ly.LeaveYearStartDate.AddYears(1) && ly.UserId == userId)
-            //     .FirstOrDefaultAsync();
-
-            List<LeaveYear> leaveYears = await db.LeaveYears
-                .Where(ly => ly.UserId == userId)
-                .ToListAsync();
-
-            LeaveYear? currentLeaveYear = leaveYears.FirstOrDefault(ly =>
-                ly.LeaveYearStartDate <= newContractStartDate && newContractStartDate <= ly.LeaveYearStartDate.AddYears(1));
-
-            if (currentLeaveYear != null)
-            {
-                contracts = await db.Contracts
-                    .Where(c => (c.StartDate >= currentLeaveYear.LeaveYearStartDate && c.StartDate < currentLeaveYear.LeaveYearStartDate.AddYears(1))
-                             || (c.EndDate >= currentLeaveYear.LeaveYearStartDate && c.EndDate < currentLeaveYear.LeaveYearStartDate.AddYears(1)))
-                    .ToListAsync();
-
-            }
 
             if (contracts.Count > 0)
             {
@@ -112,21 +93,19 @@ namespace DeviseHR_Server.Services.ContractServices
                 if (contracts[contracts.Count - 1].StartDate >= newContractStartDate) throw new Exception("New contract start date must be after previous contract start date in in order to calculate leave");
 
                 // calculate from start of (leave year or start of contract ( if no previous contracts exist before this one ) ) to start date of new contract
-                firstHalfCalculation = currentLeaveYear != null ? currentLeaveYear.FullLeaveYearEntitlement : 0;
+                firstHalfCalculation = data.CurrentLeaveYear != null ? data.CurrentLeaveYear.FullLeaveYearEntitlement : 0;
 
             }
 
-           
+
 
             // calculate from start of new contract to end of leave year
-
-
-            if (newContract.EndDate != null && currentLeaveYear != null)
+            if (newContract.EndDate != null && data.CurrentLeaveYear != null)
             {
                 DateOnly endDate = DateOnly.ParseExact(newContract.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-                if (endDate >= currentLeaveYear.LeaveYearStartDate.AddYears(1))
+                if (endDate >= data.CurrentLeaveYear.LeaveYearStartDate.AddYears(1))
                 {
-                    EndOfCurrentLeaveYearOrContractWhicheverIsFirst = currentLeaveYear.LeaveYearStartDate.AddYears(1);
+                    EndOfCurrentLeaveYearOrContractWhicheverIsFirst = data.CurrentLeaveYear.LeaveYearStartDate.AddYears(1);
                 }
                 else
                 {
@@ -136,20 +115,20 @@ namespace DeviseHR_Server.Services.ContractServices
             }
             else
             {
-                if (currentLeaveYear != null)
+                if (data.CurrentLeaveYear != null)
                 {
-                    EndOfCurrentLeaveYearOrContractWhicheverIsFirst = currentLeaveYear.LeaveYearStartDate.AddYears(1);
+                    EndOfCurrentLeaveYearOrContractWhicheverIsFirst = data.CurrentLeaveYear.LeaveYearStartDate.AddYears(1);
                 }
                 else
                 {
-                    User user = await db.Users.FirstAsync<User>(u => u.Id == userId);
+                    // User user = await db.Users.FirstAsync<User>(u => u.Id == userId);
 
                     int currentYear = newContractStartDate.Year;
-            
-                    DateTime leaveYearStartDateTime = new DateTime(currentYear, user.AnnualLeaveStartDate.Month, user.AnnualLeaveStartDate.Day);
+
+                    DateTime leaveYearStartDateTime = new DateTime(currentYear, data.User.AnnualLeaveStartDate.Month, data.User.AnnualLeaveStartDate.Day);
                     DateOnly leaveYearEndDate = DateOnly.FromDateTime(leaveYearStartDateTime).AddYears(1);
 
-                    if(leaveYearEndDate < newContractStartDate)
+                    if (leaveYearEndDate < newContractStartDate)
                     {
                         EndOfCurrentLeaveYearOrContractWhicheverIsFirst = leaveYearEndDate.AddYears(1);
                     }
@@ -158,14 +137,14 @@ namespace DeviseHR_Server.Services.ContractServices
                         EndOfCurrentLeaveYearOrContractWhicheverIsFirst = leaveYearEndDate;
                     }
 
-                   
+
                 }
             }
 
             string endDateString = EndOfCurrentLeaveYearOrContractWhicheverIsFirst.ToString("yyyy-MM-dd");
 
-           
-           
+
+
 
             if (newContract.IsLeaveInDays)
             {

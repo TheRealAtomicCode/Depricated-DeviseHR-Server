@@ -1,4 +1,5 @@
-﻿using DeviseHR_Server.Models;
+﻿using DeviseHR_Server.DTOs.RepoToServiceDTOs;
+using DeviseHR_Server.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.ComponentModel.Design;
@@ -86,6 +87,42 @@ namespace DeviseHR_Server.Repositories.ContractRepositories
             }
 
             return leaveYears;
+        }
+
+
+        public static async Task<CalculateLeaveYearDtoFromRepoToService> GetContractAndLeaveYearInfoForCalculation(int userId, DateOnly newContractStartDate)
+        {
+            var db = new DeviseHrContext();
+
+            List<Contract> contracts = new List<Contract>();
+
+            List<LeaveYear> leaveYears = await db.LeaveYears
+                .Where(ly => ly.UserId == userId)
+                .Include(u => u.UserId == userId)
+                .ToListAsync();
+
+
+            LeaveYear? currentLeaveYear = leaveYears.FirstOrDefault(ly =>
+                ly.LeaveYearStartDate <= newContractStartDate && newContractStartDate <= ly.LeaveYearStartDate.AddYears(1));
+
+            if (currentLeaveYear != null)
+            {
+                contracts = await db.Contracts
+                    .Where(c => (c.StartDate >= currentLeaveYear.LeaveYearStartDate && c.StartDate < currentLeaveYear.LeaveYearStartDate.AddYears(1))
+                             || (c.EndDate >= currentLeaveYear.LeaveYearStartDate && c.EndDate < currentLeaveYear.LeaveYearStartDate.AddYears(1)))
+                    .ToListAsync();
+
+            }
+
+            User user = await db.Users.FirstAsync<User>(u => u.Id == userId);
+
+            CalculateLeaveYearDtoFromRepoToService dto = new CalculateLeaveYearDtoFromRepoToService();
+            dto.CurrentLeaveYear = currentLeaveYear;
+            dto.LeaveYears = leaveYears;
+            dto.user = user;
+            dto.Contracts = contracts;
+
+            return dto;
         }
 
 
