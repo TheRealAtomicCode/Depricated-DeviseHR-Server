@@ -1,13 +1,9 @@
 ﻿using DeviseHR_Server.Common;
 using DeviseHR_Server.DTOs;
-using DeviseHR_Server.Services.UserServices;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using static DeviseHR_Server.DTOs.RequestDTOs.ManagerUserRequests;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-
 using DeviseHR_Server.DTOs.RequestDTOs;
 using DeviseHR_Server.Models;
 using DeviseHR_Server.Services.ContractServices;
@@ -45,7 +41,7 @@ namespace DeviseHR_Server.Controllers.Contract_Controllers
             }
             catch (Exception ex)
             {
-                var serviceResponse = new ServiceResponse<bool>(false, false, ex.Message);
+                var serviceResponse = new ServiceResponse<Contract>(null!, false, ex.Message);
                 return BadRequest(serviceResponse);
             }
         }
@@ -93,7 +89,7 @@ namespace DeviseHR_Server.Controllers.Contract_Controllers
                 int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
                 int userType = int.Parse(claimsPrincipal.FindFirst("userType")!.Value);
 
-                var contract = await ManagerContractService.CalculateLeaveYear(userId, myId, companyId, userType, newConract);
+                var contract = await ManagerContractService.CalculateLeaveYear(userId, newConract);
 
                 var serviceResponse = new ServiceResponse<CreateContractRequest>(contract, true, "");
 
@@ -101,7 +97,7 @@ namespace DeviseHR_Server.Controllers.Contract_Controllers
             }
             catch (Exception ex)
             {
-                var serviceResponse = new ServiceResponse<bool>(false, false, ex.Message);
+                var serviceResponse = new ServiceResponse<CreateContractRequest>(null!, false, ex.Message);
                 return BadRequest(serviceResponse);
             }
         }
@@ -110,7 +106,7 @@ namespace DeviseHR_Server.Controllers.Contract_Controllers
 
         [HttpGet("GetLeaveYear/{userId}")]
         [Authorize(Policy = "Manager")]
-        public async Task<ActionResult<ServiceResponse<bool>>> GetLeaveYear([FromRoute] int userId)
+        public async Task<ActionResult<ServiceResponse<List<LeaveYear>>>> GetLeaveYear([FromRoute] int userId)
         {
             try
             {
@@ -122,15 +118,15 @@ namespace DeviseHR_Server.Controllers.Contract_Controllers
                 int userType = int.Parse(claimsPrincipal.FindFirst("userType")!.Value);
                 bool enableShowEmployees = bool.Parse(claimsPrincipal.FindFirst("enableShowEmployees")!.Value);
 
-                await ManagerContractService.GetLeaveYearService(userId, myId, companyId, userType, enableShowEmployees);
+                List<LeaveYear> leaveYears = await ManagerContractService.GetLeaveYearService(userId, myId, companyId, userType, enableShowEmployees);
 
-                var serviceResponse = new ServiceResponse<bool>(true, true, "");
+                var serviceResponse = new ServiceResponse<List<LeaveYear>>(leaveYears, true, "");
 
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                var serviceResponse = new ServiceResponse<bool>(false, false, ex.Message);
+                var serviceResponse = new ServiceResponse<List<LeaveYear>>(null!, false, ex.Message);
                 return BadRequest(serviceResponse);
             }
         }

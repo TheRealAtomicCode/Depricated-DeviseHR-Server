@@ -1,5 +1,6 @@
 ﻿
 
+using DeviseHR_Server.DTOs.RepoToServiceDTOs;
 using DeviseHR_Server.DTOs.RequestDTOs;
 using DeviseHR_Server.Models;
 using DeviseHR_Server.Repositories.ContractRepositories;
@@ -206,13 +207,14 @@ namespace DeviseHR_Server.Services.ContractServices
         }
 
 
-        public static async Task GetLeaveYearService(int userId, int myId, int companyId, int userType, bool enableShowEmployees)
+        public static async Task<List<LeaveYear>> GetLeaveYearService(int userId, int myId, int companyId, int userType, bool enableShowEmployees)
         {
             bool checkIfSubordinate = true;
             if ((userType == 2 && enableShowEmployees == true) || userType == 1) checkIfSubordinate = false;
 
-            ManageContractRepository.GetLeaveYearRepo(userId, companyId, myId, checkIfSubordinate);
+            List<LeaveYear> leaveYears = await ManageContractRepository.GetLeaveYearRepo(userId, companyId, myId, checkIfSubordinate);
 
+            return leaveYears;
         }
 
 

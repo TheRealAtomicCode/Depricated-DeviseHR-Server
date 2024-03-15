@@ -119,7 +119,7 @@ namespace DeviseHR_Server.Repositories.ContractRepositories
             CalculateLeaveYearDtoFromRepoToService dto = new CalculateLeaveYearDtoFromRepoToService();
             dto.CurrentLeaveYear = currentLeaveYear;
             dto.LeaveYears = leaveYears;
-            dto.user = user;
+            dto.User = user;
             dto.Contracts = contracts;
 
             return dto;
