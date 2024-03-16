@@ -16,10 +16,12 @@ namespace DeviseHR_Server.Controllers.Leave_Controller
     public class LeaveController : ControllerBase
     {
 
+
         [HttpPost("RequestLeave")]
         [Authorize(Policy = "Employee")]
         public async Task<ActionResult<ServiceResponse<bool>>> AddLeave([FromBody] AddAbsenceRequest newAbsence)
         {
+
             try
             {
                 string clientJWT = Tokens.ExtractTokenFromRequestHeaders(HttpContext);
@@ -29,7 +31,7 @@ namespace DeviseHR_Server.Controllers.Leave_Controller
                 int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
                 int userType = int.Parse(claimsPrincipal.FindFirst("userType")!.Value);
 
-              //  Contract addedContract = await ManagerContractService.AddContract(newConract, myId, companyId, userType);
+                Contract addedContract = await ManageLeaveService.RequestLeaveService(newAbsence, myId, companyId, userType);
 
                 var serviceResponse = new ServiceResponse<bool>(true, true, "");
 
@@ -41,5 +43,8 @@ namespace DeviseHR_Server.Controllers.Leave_Controller
                 return BadRequest(serviceResponse);
             }
         }
+
+
+
     }
 }
