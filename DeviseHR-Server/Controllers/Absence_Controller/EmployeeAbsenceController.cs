@@ -32,7 +32,7 @@ namespace DeviseHR_Server.Controllers.Leave_Controller
                 int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
                 int userType = int.Parse(claimsPrincipal.FindFirst("userType")!.Value);
 
-                await EmployeeLeaveService.RequestLeaveService(newAbsence, myId, companyId, userType);
+                await EmployeeLeaveService.RequestAbsenceService(newAbsence, myId, companyId, userType);
 
                 var serviceResponse = new ServiceResponse<bool>(true, true, "");
 

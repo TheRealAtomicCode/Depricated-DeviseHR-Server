@@ -6,7 +6,7 @@ namespace DeviseHR_Server.Services.LeaveServices
     public class EmployeeLeaveService
     {
 
-        public static async Task RequestLeaveService(AddAbsenceRequest newAbsence, int myId, int companyId, int userType)
+        public static async Task RequestAbsenceService(AddAbsenceRequest newAbsence, int myId, int companyId, int userType)
         {
             if(newAbsence.UserId == myId)
             {
