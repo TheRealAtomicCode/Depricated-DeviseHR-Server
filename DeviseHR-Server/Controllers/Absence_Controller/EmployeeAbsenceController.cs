@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using DeviseHR_Server.Models;
+using DeviseHR_Server.Services.LeaveServices;
 
 namespace DeviseHR_Server.Controllers.Leave_Controller
 {
@@ -17,7 +18,7 @@ namespace DeviseHR_Server.Controllers.Leave_Controller
     {
 
 
-        [HttpPost("RequestLeave")]
+        [HttpPost("AddAbsence")]
         [Authorize(Policy = "Employee")]
         public async Task<ActionResult<ServiceResponse<bool>>> AddLeave([FromBody] AddAbsenceRequest newAbsence)
         {
@@ -31,7 +32,7 @@ namespace DeviseHR_Server.Controllers.Leave_Controller
                 int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
                 int userType = int.Parse(claimsPrincipal.FindFirst("userType")!.Value);
 
-                Contract addedContract = await ManageLeaveService.RequestLeaveService(newAbsence, myId, companyId, userType);
+                await EmployeeLeaveService.RequestLeaveService(newAbsence, myId, companyId, userType);
 
                 var serviceResponse = new ServiceResponse<bool>(true, true, "");
 

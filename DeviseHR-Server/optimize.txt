@@ -1,0 +1,5 @@
+
+
+calculate leave
+
+add absence ( check subordinates and managers when adding the leave )

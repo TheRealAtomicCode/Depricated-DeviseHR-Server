@@ -1,4 +1,5 @@
 ﻿using DeviseHR_Server.DTOs.RequestDTOs;
+using DeviseHR_Server.Repositories.RoleRepositories;
 
 namespace DeviseHR_Server.Services.LeaveServices
 {
@@ -9,15 +10,25 @@ namespace DeviseHR_Server.Services.LeaveServices
         {
             if(newAbsence.UserId == myId)
             {
-                if (userType != 1)
+                if (userType == 1)
+                {
+                    // check if i have a manager
+                    bool hasManager = await UserRelationsRepository.HasManager(myId);
+                    
+                    if(hasManager)
+                    {
+                        // request
+                    }
+                    else
+                    {
+                        // add
+                    }
+                }
+                else
                 {
                     // request
                 }
-                else 
-                { 
-                    // get my managers
-                    // add or request
-                }
+             
 
             }
             else
@@ -28,13 +39,22 @@ namespace DeviseHR_Server.Services.LeaveServices
                 }
                 else if(userType == 2)
                 {
-                    // get my subordinates
-                    // add or Error
+                    bool isSubordinate = await UserRelationsRepository.IsRelated(myId, newAbsence.UserId);
+                    
+                    if(isSubordinate)
+                    {
+                        // add
+                    }
+                    else
+                    {
+                        // error
+                    }
                 }
                 else
                 {
                     // error
                 }
+
 
              
             }
