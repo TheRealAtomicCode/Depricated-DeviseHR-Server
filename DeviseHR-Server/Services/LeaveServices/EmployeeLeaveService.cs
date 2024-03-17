@@ -1,4 +1,6 @@
 ﻿using DeviseHR_Server.DTOs.RequestDTOs;
+using DeviseHR_Server.Models;
+using DeviseHR_Server.Repositories.AbsenceRepositories;
 using DeviseHR_Server.Repositories.RoleRepositories;
 
 namespace DeviseHR_Server.Services.LeaveServices
@@ -6,8 +8,12 @@ namespace DeviseHR_Server.Services.LeaveServices
     public class EmployeeLeaveService
     {
 
-        public static async Task RequestAbsenceService(AddAbsenceRequest newAbsence, int myId, int companyId, int userType)
+        public static async Task<Absence> RequestAbsenceService(AddAbsenceRequest newAbsence, int myId, int companyId, int userType)
         {
+
+            DateOnly startDate = DateOnly.Parse(newAbsence.StartDate);
+            DateOnly endDate = DateOnly.Parse(newAbsence.EndDate);
+            
             if(newAbsence.UserId == myId)
             {
                 if (userType == 1)
@@ -18,15 +24,18 @@ namespace DeviseHR_Server.Services.LeaveServices
                     if(hasManager)
                     {
                         // request
+                        return await EmployeeAbsenceRepository.AddOrRequestAbsence(newAbsence, startDate, endDate, myId, companyId, false);
                     }
                     else
                     {
                         // add
+                        return await EmployeeAbsenceRepository.AddOrRequestAbsence(newAbsence, startDate, endDate, myId, companyId, true);
                     }
                 }
                 else
                 {
                     // request
+                    return await EmployeeAbsenceRepository.AddOrRequestAbsence(newAbsence, startDate, endDate, myId, companyId, false);
                 }
              
 
@@ -35,7 +44,7 @@ namespace DeviseHR_Server.Services.LeaveServices
             {
                 if(userType == 1)
                 {
-                    // add
+                    return await EmployeeAbsenceRepository.AddOrRequestAbsence(newAbsence, startDate, endDate, myId, companyId, true);
                 }
                 else if(userType == 2)
                 {
@@ -43,16 +52,18 @@ namespace DeviseHR_Server.Services.LeaveServices
                     
                     if(isSubordinate)
                     {
-                        // add
+                        return await EmployeeAbsenceRepository.AddOrRequestAbsence(newAbsence, startDate, endDate, myId, companyId, true);
                     }
                     else
                     {
                         // error
+                        throw new Exception("Can not add absence for user who is not your subordinate");
                     }
                 }
                 else
                 {
                     // error
+                    throw new Exception("You do not have permissions to add absences for other users");
                 }
 
 

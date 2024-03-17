@@ -20,7 +20,7 @@ namespace DeviseHR_Server.Controllers.Leave_Controller
 
         [HttpPost("AddAbsence")]
         [Authorize(Policy = "Employee")]
-        public async Task<ActionResult<ServiceResponse<bool>>> AddLeave([FromBody] AddAbsenceRequest newAbsence)
+        public async Task<ActionResult<ServiceResponse<Absence>>> AddLeave([FromBody] AddAbsenceRequest newAbsence)
         {
 
             try
@@ -32,15 +32,15 @@ namespace DeviseHR_Server.Controllers.Leave_Controller
                 int companyId = int.Parse(claimsPrincipal.FindFirst("companyId")!.Value);
                 int userType = int.Parse(claimsPrincipal.FindFirst("userType")!.Value);
 
-                await EmployeeLeaveService.RequestAbsenceService(newAbsence, myId, companyId, userType);
+                Absence absence = await EmployeeLeaveService.RequestAbsenceService(newAbsence, myId, companyId, userType);
 
-                var serviceResponse = new ServiceResponse<bool>(true, true, "");
+                var serviceResponse = new ServiceResponse<Absence>(absence, true, "");
 
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                var serviceResponse = new ServiceResponse<Contract>(null!, false, ex.Message);
+                var serviceResponse = new ServiceResponse<Absence>(null!, false, ex.Message);
                 return BadRequest(serviceResponse);
             }
         }

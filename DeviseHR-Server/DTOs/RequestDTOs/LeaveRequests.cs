@@ -6,15 +6,15 @@ namespace DeviseHR_Server.DTOs.RequestDTOs
     {
         public int UserId { get; set; }
 
-        public DateOnly StartDate { get; set; }
+        public string StartDate { get; set; } = "";
 
-        public DateOnly EndDate { get; set; }
+        public string EndDate { get; set; } = "";
 
         public bool? IsFirstHalfDay { get; set; }
 
-        public TimeOnly? StartTime { get; set; }
+        public TimeOnly StartTime { get; set; } = new TimeOnly();
 
-        public TimeOnly? EndTime { get; set; }
+        public TimeOnly EndTime { get; set; } = new TimeOnly();
 
         public int AbsenceTypes { get; set; }
 
