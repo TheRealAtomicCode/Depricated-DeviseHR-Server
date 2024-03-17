@@ -13,7 +13,7 @@ public partial class Company
 
     public string AccountNumber { get; set; } = null!;
 
-    public DateOnly? AnnualLeaveStartDate { get; set; }
+    public DateOnly AnnualLeaveStartDate { get; set; }
 
     public string? Logo { get; set; }
 

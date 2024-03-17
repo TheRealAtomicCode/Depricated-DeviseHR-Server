@@ -38,6 +38,8 @@ namespace DeviseHR_Server.Services.ContractServices
                 endDate = parsedEndDate;
             }
 
+            int newContractsContractedLeaveEntitlement = (int)Math.Ceiling(newContract.ContractedLeaveEntitlement);
+
             var contract = new Contract
             {
                 UserId = newContract.UserId,
@@ -52,7 +54,7 @@ namespace DeviseHR_Server.Services.ContractServices
                 AverageWorkingDay = newContract.AvrageWorkingDay,
                 IsLeaveInDays = newContract.IsLeaveInDays,
                 CompanyLeaveEntitlement = newContract.CompanyLeaveEntitlement,
-                ContractedLeaveEntitlement = newContract.ContractedLeaveEntitlement,
+                ContractedLeaveEntitlement = newContractsContractedLeaveEntitlement,
                 ThisContractsLeaveAllowence = newContract.ThisContractsLeaveAllowence,
                 TermTimeId = newContract.TermTimeId,
                 AddedBy = myId,

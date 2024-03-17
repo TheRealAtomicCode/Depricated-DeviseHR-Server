@@ -27,5 +27,7 @@ public partial class LeaveYear
 
     public int TotalLeaveAllowance { get; set; }
 
+    public bool IsDays { get; set; }
+
     public int? LeaveYearYear { get; set; }
 }

@@ -76,7 +76,8 @@ namespace DeviseHR_Server.Repositories.ContractRepositories
                         FullLeaveYearEntitlement = leaveYears[leaveYears.Count - 1].FullLeaveYearEntitlement,
                         TotalLeaveAllowance = leaveYears[leaveYears.Count - 1].FullLeaveYearEntitlement,
                         AddedBy = leaveYears[leaveYears.Count - 1].AddedBy,
-                        LeaveYearYear = leaveYearStartDate.Year
+                        LeaveYearYear = leaveYearStartDate.Year,
+                        IsDays = leaveYears[leaveYears.Count - 1].IsDays,
                     };
 
                     db.LeaveYears.Add(newLeaveYear);
