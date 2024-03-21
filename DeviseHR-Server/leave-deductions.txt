@@ -1,0 +1,6 @@
+1 deduct from annual leave
+2 deduct from sick leave
+3 deduct from annual leave and add to emergency leave
+4, 5, 6, 7, 8, 9, 11, 12, 13 no dedcutions
+10 deduct from TOIL only in hours
+14 add to lateness 

@@ -1,5 +1,6 @@
 ﻿using DeviseHR_Server.DTOs.RepoToServiceDTOs;
 using DeviseHR_Server.Models;
+
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.ComponentModel.Design;
@@ -8,60 +9,54 @@ using Contract = DeviseHR_Server.Models.Contract;
 
 namespace DeviseHR_Server.Repositories.ContractRepositories
 {
-    public class ManageContractRepository
+    public class ContractRepo
     {
 
-        public static async Task<Contract> AddContract(Contract contract)
+        public static async Task<List<Contract>> GetContractsByUserIdFromDb(DeviseHrContext db, int userId)
         {
-            var db = new DeviseHrContext();
+            List<Contract> contracts = await db.Contracts.Where(c => c.UserId == userId).ToListAsync();
 
-            db.Contracts.Add(contract);
-            await db.SaveChangesAsync();
+            return contracts;
+        }
+
+        public static async Task<Contract> UpdatePreviousContracts(DeviseHrContext db, Contract contract)
+        {
+
+
 
             return contract;
         }
 
 
-        public static async Task EndLastContractRepo(int userId, string endDate, int myId, int companyId, int userType)
+
+        public static async Task<List<Contract>> GetContractsByLeaveYearDurationFromDb(DeviseHrContext db, DateOnly selectedDate, int userId, int companyId)
         {
-            using (var dbContext = new DeviseHrContext())
-            {
-                await dbContext.Database.ExecuteSqlRawAsync("SELECT * FROM update_last_contract_end_date({0}, {1}, {2}, {3}, {4})", userId, myId, companyId, endDate, userType);
-            }
+            List<Contract> contracts = await db.Contracts
+                    .Where(c => (c.UserId == userId && c.CompanyId == companyId && c.StartDate >= selectedDate && c.StartDate < selectedDate.AddYears(1))
+                             || (c.UserId == userId && c.CompanyId == companyId && c.EndDate >= selectedDate && c.EndDate < selectedDate.AddYears(1)))
+                    .ToListAsync();
+
+            if (contracts.Count == 0) throw new Exception("Unable to locate Contracts");
+
+            return contracts;
         }
 
 
 
-        public static async Task<List<LeaveYear>> GetLeaveYearRepo(int userId, int companyId, int myId, bool checkIfSubordinate)
+        public static async Task<List<LeaveYear>> AddMissingLeaveYearRepo(DeviseHrContext db, List<LeaveYear> leaveYears, int userId, int companyId)
         {
-            var db = new DeviseHrContext();
-
-            if (checkIfSubordinate)
-            {
-                var hierarchy = await db.Hierarchies.FirstOrDefaultAsync(h => h.ManagerId == myId && h.SubordinateId == userId);
-                if (hierarchy != null)
-                {
-                    throw new Exception("You are not this user's manager");
-                }
-            }
-
-            List<LeaveYear> leaveYears = await db.LeaveYears.Where(ly => ly.UserId == userId && ly.CompanyId == companyId).ToListAsync();
-
             int leaveYearCount = leaveYears.Count;
 
-            if (leaveYearCount == 0)
-            {
-                throw new Exception("Please create a contract");
-            }
+            if (leaveYearCount == 0) throw new Exception("Please create a contract");
 
             DateOnly currentDate = DateOnly.FromDateTime(DateTime.Now.Date);
-            DateOnly currentDatePlusOneYear = currentDate.AddYears(1);
 
             // Create all the leave years between the leave year start and the next year
             DateOnly leaveYearStartDate = leaveYears[leaveYearCount - 1].LeaveYearStartDate;
 
             if (leaveYearStartDate < currentDate)
             {
+
 
                 while (leaveYearStartDate < currentDate)
                 {
@@ -72,9 +67,9 @@ namespace DeviseHR_Server.Repositories.ContractRepositories
                         UserId = userId,
                         CompanyId = companyId,
                         LeaveYearStartDate = leaveYearStartDate,
-                        TotalLeaveEntitlement = leaveYears[leaveYears.Count - 1].FullLeaveYearEntitlement,
-                        FullLeaveYearEntitlement = leaveYears[leaveYears.Count - 1].FullLeaveYearEntitlement,
-                        TotalLeaveAllowance = leaveYears[leaveYears.Count - 1].FullLeaveYearEntitlement,
+                        TotalLeaveEntitlement = leaveYears[leaveYears.Count - 1].NextLeaveYearEntitlement,
+                        FullLeaveYearEntitlement = leaveYears[leaveYears.Count - 1].NextLeaveYearEntitlement,
+                        TotalLeaveAllowance = leaveYears[leaveYears.Count - 1].NextLeaveYearEntitlement,
                         AddedBy = leaveYears[leaveYears.Count - 1].AddedBy,
                         LeaveYearYear = leaveYearStartDate.Year,
                         IsDays = leaveYears[leaveYears.Count - 1].IsDays,
@@ -99,7 +94,6 @@ namespace DeviseHR_Server.Repositories.ContractRepositories
 
             List<LeaveYear> leaveYears = await db.LeaveYears
                 .Where(ly => ly.UserId == userId)
-                .Include(u => u.UserId == userId)
                 .ToListAsync();
 
 
@@ -115,7 +109,9 @@ namespace DeviseHR_Server.Repositories.ContractRepositories
 
             }
 
-            User user = await db.Users.FirstAsync<User>(u => u.Id == userId);
+            User? user = await db.Users.FirstOrDefaultAsync<User>(u => u.Id == userId);
+
+            if (user == null) throw new Exception("Can not calculate leave for a user that does not exist.");
 
             CalculateLeaveYearDtoFromRepoToService dto = new CalculateLeaveYearDtoFromRepoToService();
             dto.CurrentLeaveYear = currentLeaveYear;

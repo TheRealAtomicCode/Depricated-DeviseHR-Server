@@ -1,9 +1,9 @@
 ﻿using DeviseHR_Server.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace DeviseHR_Server.Repositories.RoleRepositories
+namespace DeviseHR_Server.Repositories.UserRepositories
 {
-    public class UserRelationsRepository
+    public class UserRelationsRepo
     {
         public static async Task<bool> IsRelated(int managerId, int subordinateId)
         {
@@ -55,8 +55,5 @@ namespace DeviseHR_Server.Repositories.RoleRepositories
 
             return hierarchies;
         }
-
-
-
     }
 }

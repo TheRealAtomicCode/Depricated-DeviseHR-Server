@@ -29,5 +29,7 @@ public partial class LeaveYear
 
     public bool IsDays { get; set; }
 
+    public int NextLeaveYearEntitlement { get; set; }
+
     public int? LeaveYearYear { get; set; }
 }

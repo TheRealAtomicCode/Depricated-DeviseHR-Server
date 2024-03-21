@@ -343,6 +343,9 @@ public partial class DeviseHrContext : DbContext
             entity.Property(e => e.LeaveYearYear)
                 .HasComputedColumnSql("EXTRACT(year FROM leave_year_start_date)", true)
                 .HasColumnName("leave_year_year");
+            entity.Property(e => e.NextLeaveYearEntitlement)
+                .HasDefaultValue(0)
+                .HasColumnName("next_leave_year_entitlement");
             entity.Property(e => e.TotalLeaveAllowance)
                 .HasDefaultValue(0)
                 .HasColumnName("total_leave_allowance");

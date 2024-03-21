@@ -12,9 +12,9 @@ namespace DeviseHR_Server.DTOs.RequestDTOs
 
         public bool? IsFirstHalfDay { get; set; }
 
-        public TimeOnly StartTime { get; set; } = new TimeOnly();
+        public int StartTime { get; set; }
 
-        public TimeOnly EndTime { get; set; } = new TimeOnly();
+        public int EndTime { get; set; }
 
         public int AbsenceTypes { get; set; }
 

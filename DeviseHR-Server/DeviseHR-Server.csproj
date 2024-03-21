@@ -56,4 +56,8 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\Absence_Controller\" />
+  </ItemGroup>
+
 </Project>
