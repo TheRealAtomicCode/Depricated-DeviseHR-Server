@@ -74,6 +74,8 @@ namespace DeviseHR_Server.Controllers.Contract_Controllers
         }
 
 
+
+
         //[HttpPatch("EndLastContract/{userId}")]
         //[Authorize(Policy = "Manager")]
         //[Authorize(Policy = "EnableAddEmployees")]
